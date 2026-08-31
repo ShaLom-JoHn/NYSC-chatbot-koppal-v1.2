@@ -1,0 +1,15 @@
+# Koppal — pinned to the versions the notebook and the saved model were built with.
+# The classifier pickle is a scikit-learn Pipeline, so the sklearn version matters:
+# unpickling under a different major.minor can warn or fail outright.
+
+pandas==3.0.5
+scikit-learn==1.9.0
+matplotlib==3.11.1
+joblib==1.5.3
+
+# Web layer (koppal_api.py). These do NOT touch the model pickle, so they are not
+# version-locked the way the ML stack above is. Floors, not exact pins; run
+# `pip freeze | Select-String fastapi,uvicorn,starlette,pydantic` after install if you
+# want to lock them for a reproducible deploy.
+fastapi>=0.110
+uvicorn[standard]>=0.29

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Koppal</title>
+  <meta name="description" content="Koppal — straight answers about NYSC: registration, camp, posting, allowance, clearance." />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230A0B0A'/%3E%3Ctext x='16' y='23' font-family='Archivo Black,sans-serif' font-size='19' fill='%23C9F24D' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    /* theme before first paint, so there is no flash */
+    (function () {
+      try {
+        var t = localStorage.getItem("koppal-theme");
+        if (t === "dark" || (t === null && matchMedia("(prefers-color-scheme: dark)").matches))
+          document.documentElement.classList.add("dark");
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <!-- the refraction map: what makes the glass BEND the lines behind it instead of only
+       blurring them. Two scales — big surfaces bend more, small pills stay readable. -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <filter id="lgwarp" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="n" />
+      <feGaussianBlur in="n" stdDeviation="2" result="nb" />
+      <feDisplacementMap in="SourceGraphic" in2="nb" scale="46" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="lgwarp-s" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="4" result="n" />
+      <feGaussianBlur in="n" stdDeviation="1.6" result="nb" />
+      <feDisplacementMap in="SourceGraphic" in2="nb" scale="14" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <!-- the header used to carry its own displacement filter (#lgwarp-h). Removed with the
+         blur ramp: displacement on a short wide band drags pixels in from past its own edge
+         and smears text in transit. The header is a flat frosted band with a hard edge now. -->
+  </svg>
+
+  <!-- D6 · the only fixed chrome. Three tiers were untangled here: GLOBAL chrome lives in
+       the header (wordmark = home · Chat⇄Browse · theme · ☰); CONVERSATION actions (reset,
+       undo) belong to the composer, not here; STATUS is transient and gets no reserved
+       space. The switch takes the optical centre because it is the primary nav; the right
+       edge is for utility icons only. -->
+  <header class="head">
+    <button class="wordmark" id="brand" aria-label="Koppal — home">Koppal</button>
+    <div class="switch lg" id="switch" style="--edge-angle:200deg">
+      <span class="thumb" id="thumb"></span>
+      <button data-screen="chat">Chat</button>
+      <button data-screen="browse">Browse</button>
+    </div>
+    <div class="headtools">
+      <!-- theme is OUT of the overflow menu: nobody discovers a mode switch inside a ☰.
+           The icon shows the mode you would move TO. No glass pill on either of these two —
+           they sit directly on the band. The status is not here any more: it needs a full
+           column of width, so it lives in the thread, above the branch row. -->
+      <button class="icon-btn theme-btn" id="theme-btn" aria-label="Switch to dark mode">
+        <span class="t-moon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="17" height="17">
+            <!-- solid crescent, not the outline glyph: one disc with a second bitten out of it -->
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="currentColor"/>
+          </svg>
+          <i class="star"></i><i class="star"></i><i class="star"></i><i class="star"></i><i class="star"></i>
+        </span>
+        <span class="t-sun" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19">
+            <circle cx="12" cy="12" r="4.3" fill="currentColor"/>
+            <g class="rays" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+              <line x1="12" y1="3.6" x2="12" y2="6.1"/><line x1="12" y1="17.9" x2="12" y2="20.4"/>
+              <line x1="3.6" y1="12" x2="6.1" y2="12"/><line x1="17.9" y1="12" x2="20.4" y2="12"/>
+              <line x1="6.1" y1="6.1" x2="7.9" y2="7.9"/><line x1="16.1" y1="16.1" x2="17.9" y2="17.9"/>
+              <line x1="17.9" y1="6.1" x2="16.1" y2="7.9"/><line x1="7.9" y1="16.1" x2="6.1" y2="17.9"/>
+            </g>
+          </svg>
+        </span>
+      </button>
+      <button class="icon-btn" id="menu-btn"
+              aria-haspopup="menu" aria-expanded="false" aria-label="More">&#9776;</button>
+    </div>
+  </header>
+
+  <div class="menu lg" id="menu" role="menu" style="--edge-angle:170deg" hidden>
+    <button data-action="about">About Koppal</button>
+    <button data-action="contribute">Suggest a fix</button>
+  </div>
+
+  <!-- A11.12/.25 · ONE scrolling surface; content dissolves into the header via a mask -->
+  <div class="scroll" id="scroll">
+    <div class="notice lg" id="notice" style="--edge-angle:190deg" hidden></div>
+
+    <!-- ===================== HOME ===================== -->
+    <section class="screen" id="screen-home" aria-label="Home">
+      <div class="wrap sheet home1">
+        <span class="kicker">Kopa&rsquo;s pal</span>
+        <h1 class="display">Ask away.<br />No guesswork.</h1>
+        <p class="sub">registration &middot; camp &middot; posting &middot; allowance &middot; clearance</p>
+        <div id="home-slot"></div>
+      </div>
+
+      <div class="wrap sheet">
+        <div class="board">
+          <div class="boardhead">
+            <div class="kicker boardlabel">Corper&rsquo;s milestones</div>
+            <!-- the label alone named the taxonomy without saying what the screen is FOR. The line
+                 under it does that, and earns the tap: every card is a question you can send. -->
+            <p class="boarddesc">Every stage of your service clarified</p>
+          </div>
+          <!-- the head keeps the top of the fold; the body takes everything it leaves and sits the
+               cards centred in it. Two rows, not one column, so the head can stay put while the
+               cards float in the middle of the space below it. -->
+          <div class="boardbody">
+            <div class="rail" id="home-rail" aria-hidden="true"></div>
+            <div class="notes" id="notes"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CHAT ===================== -->
+    <section class="screen" id="screen-chat" aria-label="Chat">
+      <div class="wrap">
+        <div class="hello" id="hello">
+          <span class="kicker">Hello there</span>
+          <h1 class="display">What do you<br />need to know?</h1>
+        </div>
+        <!-- the side turn-tracker rail is gone: the per-bubble speaker dot already says who
+             is talking, and a second column of dots counting turns was noise. -->
+        <div class="chatgrid">
+          <div class="thread" id="thread"></div>
+          <!-- the topic line and transient notes are rendered INTO the thread, so they get the
+               full column width and sit right above the branch row they describe -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== BROWSE ===================== -->
+    <section class="screen" id="screen-browse" aria-label="Browse">
+      <div class="wrap">
+        <div class="shelfpage" id="browse-grid">
+          <!-- level 1 only: the shelf's own line, at the top of the fold and left-aligned with
+               the spines. Hidden the moment a book opens, because that page says where it is. -->
+          <div class="shelfhead" id="shelf-head" hidden>
+            <p class="shelfdesc">Browse according to your service stage</p>
+          </div>
+          <div class="shelfbody">
+            <div class="rail" id="browse-rail"></div>
+            <div id="shelf-area"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- (the three-layer blur ramp and its scrim lived here. Deleted with D6: a blur that
+       BUILDS toward the top distorts text all the way up, which is the smearing. The header
+       is now a defined frosted band and content is cut cleanly at its bottom edge.) -->
+
+  <!-- One composer, moved between Home and Chat. The box is ALWAYS two rows: the text line on
+       top, and its own controls underneath — Reset/Undo on one side, send on the other. They
+       are inside the box so they never overlap the text or the messages behind it, and they
+       never move: focus only makes the text row taller. -->
+  <!-- starts hidden: boot awaits /api/health and the board before it knows which screen to
+       restore, and until then a visible composer flashed up on a Browse reload. setScreen
+       reveals it for Home and Chat. -->
+  <div class="composer" id="composer" hidden>
+    <form class="box lg warp2" id="form" autocomplete="off" style="--edge-angle:165deg">
+      <input id="input" type="text" aria-label="Ask about NYSC" />
+      <div class="boxrow">
+        <div class="convo-actions" id="convo-actions">
+          <button class="ctl" id="reset" type="button" aria-label="Reset the conversation">
+            <i aria-hidden="true">&#8634;</i><span>Reset</span>
+          </button>
+          <button class="ctl" id="undo" type="button" aria-label="Undo the last turn" hidden>
+            <i aria-hidden="true">&#8630;</i><span>Undo</span>
+          </button>
+        </div>
+        <button class="send" id="send" type="submit" aria-label="Send">
+          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M12 5l-7 7h4.5v7h5v-7H19z"/></svg>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

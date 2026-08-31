@@ -1,0 +1,1574 @@
+﻿/* ============================================================================
+   koppal — styles.css   ·   rebuilt against docs/KOPPAL_MASTER_SPEC.md §A11
+   ----------------------------------------------------------------------------
+   A11 rules this file encodes:
+     .18  the existing palette only — lime #C9F24D, near-black, near-white,
+          dirty green. Light = white→light-green formless gradient, dark text,
+          grey-tinted glass. Dark = near-black + near-white + lime + glass.
+     .8   the accent is NEVER a border, in either mode
+     .19  glass has ONE edge, and that edge is uneven: reflection arc → fade →
+          dark lip, angle per element (--edge-angle). Not a hairline.
+     .21  motion contract: 140ms ease-out in, scale(.97)/80ms press, a distinct
+          signature per family. Nothing inert.
+     .12/.25  ONE surface per screen: fixed header, single scroller, content
+          dissolves into the header through a mask — no stacked bands.
+     .9   smaller type, fewer elements, much more air. Groups read as groups.
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ---------- LIGHT: white → light-green formless ground, dark text ---------- */
+:root {
+  --ground:#F5F5F3;
+  --ink:#17181A;
+  --muted:#6E7168;
+  --accent:#C9F24D;
+  --accent-ink:#17181A;
+  --dirty:#2A352E;
+  --surface:#FFFFFF;
+  --surface-ink:#17181A;
+  --sunken:#EBEAE3;
+
+  /* glass: grey-tinted in light, and every white surface carries a whisper of lime */
+  --glass:color-mix(in srgb, var(--accent) 7%, rgba(236,236,231,.58));
+  /* the milestone cards are this same film, wearing a colour — so they carry its alpha.
+     .68 rather than the film's own .58: measured, the two dark hues at .58 composite into the
+     mid-luminance band (L .23 and .35) where NEITHER white nor near-black clears 4.5:1. .68
+     carries them clear of it while staying far off the 88% that flattened the glass. */
+  --tint-a:.68;
+  --glass-ink:#17181A;
+  --glass-strong:color-mix(in srgb, var(--accent) 9%, rgba(255,255,255,.74));
+
+  /* ---- LIQUID GLASS (built from reference/liquid glass/*) ----------------------
+     Light mode reads like the pill reference: the fill is barely lighter than the
+     ground, and the shape is legible only through a specular top edge, a soft dark
+     lower lip and a drop shadow. No border, no ring, no metal. */
+  --lg-fill:rgba(255,255,255,.34);
+  --lg-fill-thin:rgba(255,255,255,.20);
+  --lg-fill-deep:rgba(255,255,255,.46);
+  --lg-blur:20px;
+  --lg-sat:1.6;
+  --lg-hi:rgba(255,255,255,.98);          /* specular highlight */
+  --lg-hi-soft:rgba(255,255,255,.55);
+  --lg-lo:rgba(23,24,26,.20);             /* the dark lower lip */
+  --lg-lo-soft:rgba(23,24,26,.10);
+  --lg-drop:0 10px 26px -6px rgba(23,24,26,.16);
+  --lg-drop-deep:0 18px 46px -10px rgba(23,24,26,.26);
+  --lg-sheen:.55;                          /* strength of the diagonal reflection */
+
+  /* the uneven edge (A11.19): reflection, light, shadow -- never a grey hairline */
+  --refl:rgba(255,255,255,.95);
+  --light:color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,.7));
+  --shade:rgba(23,24,26,.10);
+
+  --radius:26px;                     /* the light ref's squat oval */
+  --radius-tile:22px;
+  --shadow:0 14px 34px rgba(23,24,26,.10);
+  --bloom:rgba(201,242,77,.55);
+
+  /* LIGHT is clean first. A whisper of lime low in the frame, nothing else — no lines,
+     no wash of colour. The glass has to earn its shape from light, not from tint. */
+  /* the ref's own gradient structure — a radial highlight over a 163° linear — hue-shifted
+     to bleached paper: warm off-white shares the lime's yellow bias, where a blue-grey
+     sits opposite it and turns the lime acidic */
+  --pools:
+    radial-gradient(120% 110% at 10% -6%, #FAFAF9 0%, rgba(250,250,249,0) 58%),
+    radial-gradient(120% 95% at 50% 116%, rgba(201,242,77,.11), transparent 72%),
+    linear-gradient(163deg, #F4F4F2 0%, #EBEBE8 46%, #DEDEDA 100%);
+  --grain-opacity:.03;
+  --texture:none;                    /* the light ref carries no texture */
+}
+
+/* ---------- DARK: near-black + near-white + lime, not "everything black" ---------- */
+:root.dark {
+  --ground:#16171A;
+  --ink:#F2F1EC;
+  --muted:#8B8F86;
+  --accent:#C9F24D;
+  --accent-ink:#0F1108;
+  --dirty:#2A352E;
+  --surface:#F5F4EF;          /* dark mode's white: near-white IS a material here */
+  --surface-ink:#101110;
+  --sunken:#141613;
+
+  --glass:rgba(242,241,236,.09);
+  /* .09 is right for a colourless film on near-black but far too faint to carry a hue, so the
+     board's tint is stronger here. It is still translucent: the blur and the edge both survive. */
+  --tint-a:.34;
+  --glass-ink:#F2F1EC;
+  --glass-strong:rgba(242,241,236,.16);
+
+  /* Dark mode follows the dark reference: the glass is DARKER than the ground it sits
+     on, and the shape is drawn by a bright specular rim, not by a light film. */
+  --lg-fill:rgba(6,8,7,.34);
+  --lg-fill-thin:rgba(6,8,7,.20);
+  --lg-fill-deep:rgba(6,8,7,.46);
+  --lg-blur:22px;
+  --lg-sat:1.5;
+  --lg-hi:rgba(255,255,255,.72);
+  --lg-hi-soft:rgba(255,255,255,.26);
+  --lg-lo:rgba(0,0,0,.72);
+  --lg-lo-soft:rgba(0,0,0,.40);
+  --lg-drop:0 14px 34px -8px rgba(0,0,0,.62);
+  --lg-drop-deep:0 22px 54px -12px rgba(0,0,0,.72);
+  --lg-sheen:.40;
+
+  --refl:rgba(255,255,255,.60);
+  --light:color-mix(in srgb, var(--accent) 60%, rgba(255,255,255,.25));
+  --shade:rgba(0,0,0,.55);
+
+  --radius:34px;                     /* _lab/replica.html .dbox — the approved dark shape */
+  --radius-tile:28px;
+  --shadow:0 18px 44px rgba(0,0,0,.55);
+  --bloom:rgba(201,242,77,.30);
+
+  /* From _lab/replica.html `.dground`, pulled back: the replica's pools were measured on a
+     463x280 crop. Stretched over a phone viewport the same stops spread much further and
+     the ground came out washed-light. These land the ground back on the ref's own level
+     (mean ~29), which is what the film needs to sit at the SAME value as. */
+  --pools:
+    radial-gradient(90% 62% at 50% 18%, #2C2F35 0%, rgba(44,47,53,0) 70%),
+    radial-gradient(70% 46% at 92% 97%, #24262B 0%, rgba(36,38,43,0) 68%);
+  --grain-opacity:0;                 /* `.dground` has no grain; it flattened the film */
+  /* `.dground::after`, opened up. The replica's .045 is invisible at app scale — the dots
+     are the whole proof that the film is translucent, so they have to be seen. */
+  --texture:radial-gradient(rgba(255,255,255,.10) 1px, transparent 1.4px);
+  --texture-size:20px 20px;
+}
+
+/* ============================ TYPE SCALE — the only sizes in the app ============================
+   Nine steps, three faces, and a fixed job for each. Nothing anywhere else declares a
+   font-size: if a new size is needed, it is a step here or it does not exist. Sizes are in rem
+   so they scale with the root, and only --t-display flexes with the viewport, because a headline
+   is the one thing that has to fill whatever screen it lands on.
+
+     FACE            STEP            USED FOR
+     Archivo Black   --t-display     the one headline per screen ("Ask away. No guesswork.")
+     Archivo Black   --t-page        a page you drilled into: an opened topic's or milestone's title
+     Archivo Black   --t-title       section titles: a spine's name on the shelf
+     Archivo Black   --t-brand       the header wordmark, and only that
+     Archivo Black   --t-cardtitle   a milestone card's category
+     Archivo         --t-body        answers, questions, prose, chat bubbles, modal copy
+     Archivo         --t-sub         secondary body: a spine's category list, the overflow menu
+     IBM Plex Mono   --t-input       what the user types, and the placeholder that mimics it
+     IBM Plex Mono   --t-label       mono caps, one family: the Chat/Browse nav, the intents line
+                                     under the headline, "Kopa's pal", the Browse back link, the
+                                     board label, chips, and a topic's two actions
+     IBM Plex Mono   --t-micro       structural mono caps: step numbers, notices
+   Weight is carried by the FACE, never by a weight value: Archivo Black is the heavy voice,
+   Archivo 400 is the reading voice, mono 400 is the machine voice. Only Archivo ships more than
+   one weight, so asking Archivo Black for 700 buys a SYNTHESISED bold, not a heavier cut — which
+   is why every rule on the display face pins 400, `.display` and `.h2` included (they are h1/h2,
+   and the UA makes those bold for you).
+
+   --t-cardtitle and --t-body carry the same value here, and that is deliberate, not a leftover:
+   a card's category and its question are the same size on a wide screen and differ on a phone,
+   so they need to be two steps that happen to meet. The phone tier at the foot of this file is
+   where they part. Ratios are not uniform between the two tiers — a size that reads as small on
+   a monitor reads as ordinary on a phone — so the tier restates values, it does not scale them. */
+:root {
+  --t-display:clamp(2.1rem, 8.6vw, 3rem);
+  --t-page:2rem;
+  --t-title:1.35rem;
+  --t-brand:1.1rem;
+  --t-cardtitle:.95rem;
+  --t-body:.95rem;
+  --t-sub:.82rem;
+  --t-input:.9rem;
+  /* .66rem, not .68, and the phone decides it: the intents line is `white-space:nowrap`, and at
+     .68rem it runs 8px off a 360px screen. .66 is the ceiling that fits 360/393/430, so the whole
+     family takes it at BOTH widths and needs no phone override. */
+  --t-label:.66rem;
+  --t-micro:.58rem;
+}
+/* the three faces, as named roles */
+.f-display { font-family:'Archivo Black',system-ui,sans-serif; font-weight:400; }
+.f-body    { font-family:'Archivo',system-ui,sans-serif; font-weight:400; }
+.f-mono    { font-family:'IBM Plex Mono',monospace; font-weight:400; }
+
+/* ---------- base ---------- */
+* { box-sizing:border-box; }
+html, body { height:100%; margin:0; }
+/* THE BAND, properly this time. Two triggers, one cause: nudging past the end of the scroller,
+   or hitting the bottom, makes the browser rubber-band and reveal area outside whatever box the
+   gradient is painted into — and what shows through there is the FLAT ground with no pools,
+   which is "pure white" in light and "a different black gradient" in dark.
+   So: the pools go on a `position:fixed` layer that is not a scroll container and therefore
+   cannot be outrun, <html> keeps a flat backstop underneath it, and `overscroll-behavior` stops
+   the rubber-band from happening at all. */
+html { background:var(--ground); overscroll-behavior:none; }
+html::before {
+  content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background-image:var(--pools);
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+}
+body {
+  background:transparent;          /* an opaque body would hide the pools layer above */
+  overscroll-behavior:none;
+  color:var(--ink);
+  font-family:'Archivo',system-ui,sans-serif;
+  font-size:15px;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;                 /* the scroller below is the only scrolling surface */
+  /* kills the blue flash Android/iOS paint over anything tappable */
+  -webkit-tap-highlight-color:transparent;
+}
+body::before {                     /* the ref's dot grid — dark mode only */
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:var(--texture); background-size:var(--texture-size, 20px 20px);
+}
+body::after {                      /* grain, so the soft gradient reads as material */
+  content:""; position:fixed; inset:0; z-index:3; pointer-events:none;
+  opacity:var(--grain-opacity);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+
+/* ============================ LIQUID GLASS ============================
+   Built from the owner's reference (liquid glass/*): the material is four layers,
+   never a border —
+     1  a low-alpha fill (lighter than the ground in light mode, DARKER in dark),
+     2  backdrop blur + saturate, with an SVG displacement map so the lines behind
+        actually bend at the rim instead of only blurring,
+     3  inset highlight top / inset dark lip bottom = the uneven edge. Because both
+        are directional, the perimeter is bright on one side and dark on the other
+        by construction — no two elements read the same, and nothing looks metallic,
+     4  a diagonal specular sheen (::before, blended) angled per element.
+   .thin  = bubbles: less fill, less lift, so they sit UNDER the chat box in hierarchy.
+   .deep  = the chat box: more fill, more lift, the only surface that floats. */
+/* ============================ LIQUID GLASS — measured off the refs ============================
+   Values sampled from reference/liquid glass/* (see _lab/replica.html for the side-by-side).
+
+   LIGHT is a HOLLOW bevel: no fill at all, the ground runs straight through. Brightest
+   element is the BOTTOM rim (near-white); the top rim is about half that, with a soft dark
+   band ~4px inside it, and a thin dark line just outside the top edge.
+     sampled top-to-bottom:  outside 175 · rim 210 · dark band 169 · interior 182
+     sampled bottom:         interior 173→206 · rim 243 · outside 165 · ground 160
+
+   DARK is a black FILM at ~33% — it darkens the ground by a constant factor rather than
+   tinting it (53→34, 44→30, 26→20). Its rim is not a hairline but a 3-4px soft bevel whose
+   width varies round the perimeter: widest on the bottom-left curve, thinning to ~1px at
+   the middle of the top, with a faint halo outside the lit arcs. Dark bands sit inside the
+   top and left edges and go BELOW the interior value — that offset inner band is what reads
+   as a tilted shape sitting inside the glass. */
+/* The white components of the edge live in their own variables, so one element can swap
+   white for lime without the whole shadow list being written out twice. Registered with
+   @property so they interpolate instead of stepping. */
+@property --w1 { syntax:"<color>"; inherits:true; initial-value:rgba(255,255,255,.92); }
+@property --w2 { syntax:"<color>"; inherits:true; initial-value:rgba(255,255,255,.55); }
+@property --w3 { syntax:"<color>"; inherits:true; initial-value:rgba(255,255,255,.46); }
+@property --w4 { syntax:"<color>"; inherits:true; initial-value:rgba(255,255,255,.30); }
+@property --w5 { syntax:"<color>"; inherits:true; initial-value:rgba(255,255,255,.24); }
+
+:root {
+  --lg-body:transparent;
+  --w1:rgba(255,255,255,.92); --w2:rgba(255,255,255,.55); --w3:rgba(255,255,255,.46);
+  --w4:rgba(255,255,255,.30); --w5:rgba(255,255,255,.24);
+  --lg-sat2:1.15;
+  --lg-blur2:3px;
+  --r-ratio:0;                       /* light keeps the ref pill family's own radii */
+  --e:1;                             /* edge scale — see :root.dark .lg */
+  /* the header band (D6). --head-h is the band's own height and is what the scroller pads
+     by, so the two can never drift apart. --head-edge is the hard line content is cut at. */
+  --head-h:3.75rem;
+  --head-fill:rgba(244,243,238,.74);
+  --head-edge:rgba(23,24,26,.11);
+  /* the speaker dot and the pending ripple. LIGHT gets no lime: near-black reads against a
+     near-white ground, lime does not. Dark keeps the accent — a mode-specific decision, not
+     one recipe recoloured. */
+  --speaker:var(--dirty);
+  /* the chat box is two rows now, so it is a rounded rectangle, not a stadium. --box-max is
+     the FOCUSED height; .composer reserves it so growth never pushes the page. */
+  --box-r:22px;
+  --box-max:5.7rem;
+  --ctl-bg:var(--dirty);             /* flat near-black control pills, no glass */
+  --ctl-ink:#F5F4EF;
+  --send-bg:#17181A;                 /* near-black disc, lime arrow */
+  --send-pulse:rgba(23,24,26,.30);   /* the ring has to be visible on a pale ground */
+  --icon-rest:#2C2E2A;               /* header icons: near black … */
+  --icon-hover:#000000;              /* … deepening to true black on hover */
+  /* Lime as TEXT on the pale ground is 1.16:1 — "Kopa's pal" and "The milestones" were
+     effectively invisible. Light mode uses the dirty green instead (5.4:1); dark keeps lime. */
+  --label-ink:#566A37;
+  /* ---- THE LIME RULE, in one place ----------------------------------------------------
+     Lime is an ACCENT and a HOVER, never a resting surface — nothing in the app sits on a
+     lime fill, which is also what dissolves the contradiction that a lime pill cannot hover
+     to lime again.
+     Lime as ink needs a dark ground: on THIS ground it measures 1.13:1, so a literal lime
+     hover in light mode reads as the word disappearing rather than as an accent. There are
+     therefore exactly two hover shapes in the app, and which one a thing gets is decided by
+     whether it can carry a ground:
+       · a PILL brings its own ground, so it FILLS on hover — and the fill INVERTS by mode:
+         light lands a black pill with lime ink, dark lands a lime pill with black ink. The
+         branch chips, "read the full answer" and "ask this in chat" are all pills and all take
+         it (see --pill-fill / --pill-ink, and .chip / .readmore / .askchat). --dirty is NOT
+         used for it: --dirty is a dark GREEN, which is why the dark chip once read as "dirty
+         green" instead of a clean lime pill.
+       · a PLAIN LINE cannot bring a ground — the topic rows, the back link, the branch-card
+         disclosures and the menu have only ink to move. Moving ink alone does not work in BOTH
+         modes though: dark can go to the lime at ~14:1, but light has no legal target. Lime in
+         light is 1.16:1, every mid step of the palette is a dirty/lime mix and therefore olive
+         (--label-ink at 5.4:1 was the old choice and read as dark green, which the owner
+         rejected), and anything lighter than the ink loses contrast on a pale ground. So the
+         SHARED mechanism is a 2px underline in currentColor — always the text's own colour, so
+         it is legible by construction in either mode. Dark additionally keeps its lime ink,
+         because there it is legal and already established.
+     Two tokens, per mode — the same shape --speaker, --send-pulse and --icon-hover have. */
+  --hover-ink:var(--ink);            /* light: the underline is the whole signal, ink holds */
+  --pill-fill:var(--ink);            /* the PILL hover fill: near-black in light … */
+  --pill-ink:var(--accent);          /* … carrying lime ink */
+  /* 100dvh, not 100vh: on a phone 100vh is the height with the URL bar HIDDEN, so a sheet sized
+     in vh is taller than what you can actually see and the scroll cue starts below the fold.
+     dvh tracks the real visible height. */
+  --fold:calc(100dvh - env(safe-area-inset-top, 0px) - var(--head-h) - .4rem);
+  --danger:#B3261E;                  /* owner-directed: red confirms a destructive action */
+  --danger-ink:#FFF6F4;
+}
+:root.dark {
+  /* `.dbox` from _lab/replica.html — its eight edges, verbatim. Its FILL is not verbatim,
+     and deliberately so: measured on the ref itself the box interior (mean 30.0) sits at
+     the SAME level as the ground beside it (27.4). The film barely darkens anything; the
+     shape is drawn by the bevel alone. The replica's .25→.44 fill is heavier than the ref
+     it was copying, which is exactly why the replica measured flat too — nothing survived
+     it. At .06→.16 the dot grid reads straight through, which is the see-through.
+     Still no backdrop-filter: blur(3px) over a 20px dot grid smears the dots to grey. */
+  --lg-body:linear-gradient(152deg, rgba(0,0,0,.06) 0%, rgba(0,0,0,.16) 100%);
+  --w1:rgba(255,255,255,.30); --w2:rgba(255,255,255,.44); --w3:rgba(255,255,255,.17);
+  --w4:rgba(255,255,255,.10); --w5:rgba(255,255,255,.07);
+  --lg-blur2:0px;                    /* `.dbox` has no backdrop-filter */
+  --lg-sat2:1;
+  /* the corner scales with the element instead of being one number for everything, but only
+     where a box corner can read as one: small pills stay oval (see .bubble.one / .chip). */
+  --r-ratio:.34;
+  --head-fill:rgba(22,23,26,.72);
+  --head-edge:rgba(255,255,255,.10);
+  --speaker:var(--accent);           /* dark keeps the lime dot and lime ripple, untouched */
+  --box-r:26px;
+  /* "darker than the box" cannot be visible ON a near-black box, so dark mode inverts the
+     idea instead of recolouring it: a flat light film, still no glass. */
+  --ctl-bg:rgba(255,255,255,.10);
+  --ctl-ink:var(--ink);
+  --send-bg:#0C0D0F;                 /* a touch below the ground, so the disc still reads */
+  --send-pulse:rgba(201,242,77,.42);
+  --icon-rest:#D9D8D3;               /* same idea, inverted: near white … */
+  --icon-hover:#FFFFFF;              /* … to pure white on hover */
+  --label-ink:var(--accent);         /* lime is correct ON dark, so dark keeps it */
+  --hover-ink:var(--accent);         /* …and so does the hover, at ~14:1 */
+  --pill-fill:var(--accent);         /* the PILL hover fill INVERTS: lime in dark … */
+  --pill-ink:var(--accent-ink);      /* … carrying near-black ink */
+  --danger:#D64B3E;
+  --danger-ink:#FFF6F4;
+}
+
+/* The edge stacks are declared ON the element, never on :root. A var() nested inside a
+   custom property is substituted where that property is DECLARED — so with --lg-edges on
+   :root the white was already baked in, and overriding --w1 on a bubble changed nothing.
+   That is why neither the pending breathe nor the focus glow ever appeared. Declared here,
+   they resolve per element, so --w1..--w5 can be swapped for lime on that element. */
+.lg {
+  --lg-edges:
+    inset 0 -1.5px 0 0 var(--w1),                    /* bottom rim — the brightest thing */
+    inset 0 -7px 9px -6px var(--w2),                 /* its inner ramp */
+    inset 0 1.2px 0 0 var(--w3),                     /* top rim — about half */
+    inset 0 6px 7px -4px rgba(38,48,64,.17),         /* the dark band inside the top */
+    inset 1.2px 0 0 0 var(--w4),
+    inset -1.2px 0 0 0 var(--w5),
+    inset -6px 0 8px -7px rgba(38,48,64,.12),
+    0 3px 7px -3px rgba(38,48,64,.24),               /* the shadow under */
+    0 -1px 0 0 rgba(38,48,64,.10);                   /* the thin dark line above */
+  /* the same edge at pill scale. The ref's lip is ~6% of the shape's height, so a band
+     measured on a 157px box has to come down to ~40% of its width on a 40px pill —
+     otherwise the highlight swallows the surface instead of edging it. */
+  --lg-edges-s:
+    inset 0 -1px 0 0 var(--w1),
+    inset 0 -3px 4px -3px var(--w2),
+    inset 0 .8px 0 0 var(--w3),
+    inset 0 2.5px 3px -2px rgba(38,48,64,.17),
+    inset .8px 0 0 0 var(--w4),
+    inset -.8px 0 0 0 var(--w5),
+    inset -2.5px 0 3px -3px rgba(38,48,64,.12),
+    0 2px 4px -2px rgba(38,48,64,.24),
+    0 -1px 0 0 rgba(38,48,64,.10);
+}
+/* dark: `.dbox`'s eight edges, every soft length scaled by --e so a 55px bubble does not
+   wear a bevel measured on a 157px box. The 1.2px hairlines do not scale — a hairline is a
+   hairline at any size. app.js sets --e per element. */
+:root.dark .lg {
+  --lg-edges:
+    inset calc(4px * var(--e)) calc(-5px * var(--e)) calc(9px * var(--e)) calc(-3px * var(--e)) var(--w1),
+    inset calc(2px * var(--e)) calc(-2px * var(--e)) calc(3px * var(--e)) calc(-1px * var(--e)) var(--w2),
+    inset 0 1.2px 0 0 var(--w3),                     /* the rim thins along the top */
+    inset -1.2px 0 0 0 var(--w4),                    /* and the right */
+    inset 0 calc(8px * var(--e)) calc(10px * var(--e)) calc(-7px * var(--e)) rgba(0,0,0,.55),
+    inset calc(9px * var(--e)) 0 calc(11px * var(--e)) calc(-8px * var(--e)) rgba(0,0,0,.50),
+    calc(-3px * var(--e)) calc(6px * var(--e)) calc(14px * var(--e)) calc(-5px * var(--e)) var(--w5),
+    0 calc(14px * var(--e)) calc(30px * var(--e)) calc(-12px * var(--e)) rgba(0,0,0,.62);
+  --lg-edges-s:var(--lg-edges);      /* dark has ONE material: `.dbox` has no pill variant */
+}
+.lg {
+  position:relative; isolation:isolate; border:0;
+  background:var(--lg-body);
+  color:var(--glass-ink);
+  -webkit-backdrop-filter:blur(var(--lg-blur2)) saturate(var(--lg-sat2));
+          backdrop-filter:blur(var(--lg-blur2)) saturate(var(--lg-sat2));
+  box-shadow:var(--lg-edges);
+}
+.lg.s { box-shadow:var(--lg-edges-s); }
+/* refraction stays on the two fixed surfaces only — at pill scale there is nothing behind
+   worth bending, and every element carrying it costs a live backdrop snapshot per frame */
+@supports (backdrop-filter: url("#lgwarp")) {
+  .lg.warp2 { backdrop-filter:url("#lgwarp") blur(var(--lg-blur2)) saturate(var(--lg-sat2)); }
+}
+.lg > * { position:relative; z-index:1; }
+
+/* (There is no lime glow left in the app. The chat box's focus is a rise, not a glow — see
+   `.box:focus-within` — and the pending signal is the rippling dot beside the bubble. The
+   `limebreathe` keyframes both of those used to share are deleted, not merely unreferenced.) */
+
+/* (the earlier 20px-blur recipe and its .glass/.thin/.deep/.warp tiers are gone — the
+   measured .lg above replaces all of them) */
+
+
+/* the five surface colours shared by the board's notes and Browse's spines — all mixed
+   from the existing palette, so "more colour" never means new hues (A11.1) */
+:root {
+  --spine-c1:var(--dirty);
+  --spine-c2:color-mix(in srgb, var(--dirty) 72%, var(--accent));
+  --spine-c3:color-mix(in srgb, var(--dirty) 42%, var(--accent));
+  --spine-c4:var(--accent);
+  --spine-c5:var(--surface);
+}
+
+/* ---------- type (A11.9: smaller, quieter) ---------- */
+/* 400 on both, because these are h1/h2: the UA asks for bold, Archivo Black has no bold cut, and
+   the browser answers with a smeared synthetic one. The face is already the heavy voice. */
+.display {
+  font-family:'Archivo Black',system-ui,sans-serif; font-weight:400;
+  letter-spacing:-.035em; line-height:.98; margin:0;
+  font-size:var(--t-display);
+}
+.h2 { font-family:'Archivo Black',sans-serif; font-weight:400; font-size:var(--t-title);
+  letter-spacing:-.02em; margin:0; }
+.mono, .kicker, .meta {
+  font-family:'IBM Plex Mono',monospace; font-weight:400;
+  letter-spacing:.14em; text-transform:uppercase;
+}
+.kicker { font-size:var(--t-label); color:var(--muted); }
+.meta   { font-size:var(--t-micro); color:var(--muted); letter-spacing:.12em; }
+.quiet  { color:var(--muted); }
+button { cursor:pointer; font-family:inherit; color:inherit;
+  -webkit-tap-highlight-color:transparent; }
+
+/* ============================ HEADER (D6) ============================
+   A real band, not a ramp. Three columns so the switch sits on the TRUE optical centre no
+   matter how wide the wordmark or the tool group get:
+        Koppal        ( Chat ⇄ Browse )        ☾  ☰
+   The wordmark IS the home link, which deletes a nav item instead of arranging it.
+   Frosted fill + one HARD bottom edge: content scrolling behind is cut at the line instead
+   of washing out through it. That hard edge is the whole point — the old ramp had no edge,
+   so text spent 7rem dissolving and read as a smear. */
+.head {
+  position:fixed; top:0; left:0; right:0; z-index:6;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:.6rem;
+  padding:calc(env(safe-area-inset-top, 0px) + .78rem) clamp(.85rem, 5vw, 2.4rem) .78rem;
+  background:var(--head-fill);
+  -webkit-backdrop-filter:blur(16px) saturate(1.35);
+          backdrop-filter:blur(16px) saturate(1.35);
+  border-bottom:1px solid var(--head-edge);
+}
+.head > .switch { justify-self:center; }
+/* max-width:100% matters as much as min-width:0 here: a grid item with justify-self:end whose
+   content is wider than its track happily overflows LEFT, which is how the status text ended
+   up painted straight across the Chat/Browse switch. */
+.headtools { justify-self:end; min-width:0; max-width:100%;
+  display:flex; align-items:center; gap:.45rem; }
+.wordmark {
+  font-family:'Archivo Black',sans-serif; font-size:var(--t-brand); letter-spacing:-.03em;
+  background:none; border:0; padding:0; justify-self:start;
+  transition:transform .14s ease-out, opacity .14s ease-out;
+}
+.wordmark:hover { transform:translateY(-1px); }
+.wordmark:active { transform:scale(.97); }
+
+/* the switch: one medium glass pill, one sliding thumb whose MATERIAL flips by mode */
+.switch {
+  position:relative; display:flex; align-items:center;
+  padding:3px; border-radius:999px; isolation:isolate;
+}
+.switch .thumb {
+  position:absolute; z-index:-1; top:3px; bottom:3px; left:3px;
+  border-radius:999px;
+  background:var(--dirty);                      /* light mode: dark thumb, light text */
+  transition:transform .34s cubic-bezier(.34,1.56,.64,1), width .34s cubic-bezier(.34,1.56,.64,1),
+             opacity .2s ease-out;
+  opacity:0;                                     /* absent on Home — nothing is active */
+}
+:root.dark .switch .thumb { background:var(--surface); }   /* dark mode: near-white thumb */
+.switch button {
+  position:relative; background:none; border:0;
+  /* .82rem, not .78: the nav text came down to --t-label's .66rem and the pill would have narrowed
+     2.4px with it. The pad absorbs the difference so the text changes size and the pill does not. */
+  padding:.4rem .82rem; border-radius:999px;
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted);
+  transition:color .2s ease-out;
+}
+.switch button.on { color:#F5F4EF; }
+:root.dark .switch button.on { color:var(--surface-ink); }
+
+/* theme and ☰ carry no glass pill — they sit directly on the band. `border:0` is not cosmetic:
+   these used to get their border reset from `.lg`, and without it the browser's default button
+   border came back as a ring around each icon. Hover deepens the ink — near black to true black
+   in light, near white to pure white in dark. No accent on hover: these are not accent controls. */
+.icon-btn {
+  width:30px; height:30px; border:0; border-radius:999px; flex:0 0 auto;
+  background:none; color:var(--icon-rest);
+  display:grid; place-items:center; font-size:1rem; line-height:1;
+  transition:transform .14s ease-out, color .2s ease-out;
+}
+.icon-btn:hover { transform:translateY(-1px); color:var(--icon-hover); }
+.icon-btn:active { transform:scale(.94); }
+
+/* one glyph per mode, swapped by CSS so no JS has to keep an icon in sync. Both children
+   occupy the same grid cell, so the button never changes width mid-flip. */
+.theme-btn { overflow:visible; }
+.theme-btn .t-moon, .theme-btn .t-sun { grid-area:1 / 1; position:relative; display:grid;
+  place-items:center; font-size:1rem; }
+.theme-btn .t-sun  { display:none; }
+:root.dark .theme-btn .t-moon { display:none; }
+:root.dark .theme-btn .t-sun  { display:grid; }
+
+/* Hover on the moon scatters stars AROUND it — not a tidy row. Five of them, all different
+   sizes, at deliberately uneven angles and distances, and the two with a negative z-index sit
+   BEHIND the glyph so the cluster has depth instead of being a badge stuck on the front.
+   Each one arrives on its own delay so they appear to twinkle on rather than snap in. */
+.theme-btn .star {
+  position:absolute; background:currentColor;
+  clip-path:polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  opacity:0; transition:opacity .22s ease-out, transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+/* up and behind, on the left */
+.theme-btn .star:nth-of-type(1) { width:6px; height:6px; top:-5px; left:-1px; z-index:-1;
+  transform:translate(4px, 5px) scale(.2) rotate(-18deg); }
+/* mid, out to the right */
+.theme-btn .star:nth-of-type(2) { width:4px; height:4px; top:11px; right:-7px;
+  transform:translate(-6px, 0) scale(.2) rotate(12deg); }
+/* down and behind, right of centre */
+.theme-btn .star:nth-of-type(3) { width:5px; height:5px; bottom:-4px; right:4px; z-index:-1;
+  transform:translate(-2px, -5px) scale(.2) rotate(24deg); }
+/* far top-right, the smallest */
+.theme-btn .star:nth-of-type(4) { width:3px; height:3px; top:-1px; right:-4px;
+  transform:translate(-4px, 3px) scale(.2) rotate(-8deg); }
+/* low left, out past the edge */
+.theme-btn .star:nth-of-type(5) { width:3px; height:3px; bottom:2px; left:-6px;
+  transform:translate(5px, -3px) scale(.2) rotate(30deg); }
+.theme-btn:hover .star { opacity:1; }
+.theme-btn:hover .star:nth-of-type(1) { transform:translate(0,0) scale(1) rotate(-18deg); transition-delay:.02s; }
+.theme-btn:hover .star:nth-of-type(2) { transform:translate(0,0) scale(1) rotate(12deg);  transition-delay:.1s; }
+.theme-btn:hover .star:nth-of-type(3) { transform:translate(0,0) scale(1) rotate(24deg);  transition-delay:.06s; }
+.theme-btn:hover .star:nth-of-type(4) { transform:translate(0,0) scale(1) rotate(-8deg);  transition-delay:.14s; }
+.theme-btn:hover .star:nth-of-type(5) { transform:translate(0,0) scale(1) rotate(30deg);  transition-delay:.18s; }
+.theme-btn .rays { transform-origin:12px 12px; transition:transform .24s cubic-bezier(.34,1.56,.64,1); }
+.theme-btn:hover .rays { transform:scale(1.3); }
+
+/* (There is no status line. It was removed on the owner's call — the ask bubble already states
+   the question directly above the chips, so it only restated what was on screen. `--topic-a/-b`
+   and the `topicbreathe` keyframes went with it.) */
+
+/* menu — closed by default, the only overflow in the app */
+.menu {
+  position:fixed; z-index:7;
+  top:calc(env(safe-area-inset-top, 0px) + var(--head-h) + .35rem);
+  right:clamp(.85rem, 5vw, 2.4rem);
+  min-width:12rem; padding:.35rem; border-radius:var(--radius);
+  display:flex; flex-direction:column; box-shadow:var(--shadow);
+}
+.menu[hidden] { display:none; }
+.menu button {
+  text-align:left; background:none; border:0; padding:.5rem .65rem;
+  border-radius:calc(var(--radius) - 6px); font-size:var(--t-sub);
+  transition:background .14s ease-out;
+}
+.menu button:hover {
+  color:var(--hover-ink); background:color-mix(in srgb, var(--lg-hi) 8%, transparent);
+  text-decoration:underline; text-underline-offset:.2em;
+  text-decoration-thickness:1px; text-decoration-thickness:from-font;
+}
+
+/* ============================ THE ONE SCROLLING SURFACE (A11.12 / A11.25) ============
+   A single scroller, top-padded by exactly the header's height so the first element is BORN
+   below the band and never has to travel out from under it. Content passing behind the band
+   is clipped at its hard edge. Home's two screens snap softly. */
+.scroll {
+  position:fixed; inset:0; overflow-y:auto; overflow-x:hidden;
+  /* no rubber-band on the scroller either: overscrolling it is the other way the band appeared */
+  overscroll-behavior:none;
+  padding:calc(env(safe-area-inset-top, 0px) + var(--head-h) + .4rem)
+          clamp(1rem, 5vw, 2.4rem)
+          calc(var(--composer-h, 7rem) + 1.5rem);
+  scrollbar-width:none;
+  /* Without this, snapping to a sheet's start scrolled the container's own top padding away —
+     which slid "Kopa's pal" up behind the header on load. scroll-padding tells the snap where
+     the usable top actually is, so sheet 1's snap position is scrollTop 0. */
+  scroll-padding-top:calc(env(safe-area-inset-top, 0px) + var(--head-h) + .4rem);
+  /* the browser's scroll anchoring was fighting us: removing the typing row and inserting the
+     bubble in its place made it "correct" the offset, which is the up-then-down twitch. We aim
+     the scroller ourselves, so we do not want a second opinion. */
+  overflow-anchor:none;
+}
+.scroll::-webkit-scrollbar { width:0; }
+/* TWO PAGES, no parking between — but the snap is driven in JS now (see snapHome), not CSS.
+   `mandatory` committed a whole screen on the faintest nudge (the "too harsh" the owner hit);
+   `proximity` parked mid-scroll (the ordinary page we removed). JS keeps both promises: the
+   gesture runs free and, a breath after it stops, eases to whichever fold it is NEARER — so a
+   sub-half nudge settles back where it was and only a real scroll advances. Home only.
+   `.snap` now just carries the flow tweak below (Home's composer is in-flow, no fixed floor). */
+/* …and on Home the composer is IN the flow (JS moves it into #home-slot), so the fixed-box
+   floor reserve the base rule keeps is dead space here — ~8.5rem of it, sitting under the
+   board. That reserve is what read as the weird gap below the cards, not the layout. Same on
+   Browse, where the composer is hidden outright. `.scroll.snap` / `.scroll.nobox` out-specify
+   the shorthand above and the phone one below, so order does not matter. */
+.scroll.snap { padding-bottom:0; }
+.scroll.nobox { padding-bottom:1.2rem; }
+
+/* (Deleted with D6: `.veil.v1/.v2/.v3`, `.scrim`, and the `#lgwarp-h` @supports override —
+   the three-layer ramp whose blur built toward the top, plus a displacement pass on top of
+   it. Between them they gave text a 7rem-long dissolve with no edge to end at, which is
+   what read as smearing. A band with one hard line replaces all of it.) */
+
+.screen { display:none; }
+.screen.on { display:block; }
+.sheet { scroll-snap-align:start; }
+/* Screen 2 is a full screen in its own right. It used to have no minimum, so the whole document
+   was barely taller than screen 1 and scrolling to the board still left the chat box and the
+   nudge arrow on screen — screen 1's furniture showing on screen 2.
+   Now it is EXACTLY one fold, not a minimum plus 3rem of tail: with a mandatory snap, any height
+   over a fold is a third resting place the two-page model does not have. Nothing on this sheet
+   is allowed to grow past it either — see the board, which shrinks instead of scrolling. */
+.sheet:last-child { height:var(--fold); padding-bottom:0; }
+.wrap { max-width:44rem; margin:0 auto; }
+
+/* ============================ HOME · screen 1 (A11.3 / A11.11) ============================
+   Catalist ref: quiet label up top, one glass element, big wordmark-scale line low in the
+   frame, and a lot of empty space.
+   Screen 1 owns a FULL viewport. The shared `.sheet` used to be `100vh - 11rem`, i.e. 176px
+   SHORTER than the screen, which is exactly why the milestone cards were already showing on
+   load — they sat 110px above the fold. The milestones are screen 2 and must not be visible
+   until you scroll. */
+/* Bottom-weighted, one block. The slack used to sit in the MIDDLE — headline pinned to the top,
+   box shoved to the bottom by `margin-top:auto` — which split two things that belong together.
+   By proximity, the identity group (label, headline, sub) and the action (the box) read as one
+   unit, so all the empty space goes ABOVE them and the cue is the only thing set apart, at the
+   edge where "there is more below" belongs. This is also the Catalist ref: a big line low in
+   the frame with a lot of air over it. */
+.home1 { display:flex; flex-direction:column; justify-content:flex-end;
+  min-height:var(--fold); padding:2.2rem 0 1.6rem; }
+/* "Kopa's pal" is not part of the headline group — it is the quiet label the ref puts UP TOP, so
+   `margin-bottom:auto` pins it to the top and hands the free space to it rather than to the
+   stack below. Everything else stays bottom-weighted as one unit. */
+.home1 .kicker { margin-bottom:auto; color:var(--label-ink); }
+.home1 .display { margin-bottom:.9rem; }
+/* the line under the headline speaks in the intents' voice: mono (A11.26). It is ONE line, and it
+   belongs to the same --t-label family as the nav, "Kopa's pal" and the Browse back link — it used
+   to sit on --t-sub, which is a BODY-face step it matched by name (`.sub`) rather than by role, and
+   that is why it read a size louder than the labels around it. The family's value is capped by this
+   line's fit on a 360px screen; see the note on --t-label. */
+.home1 .sub {
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label);
+  line-height:1.75; white-space:nowrap;
+  color:var(--label-ink); margin:0;
+}
+/* (the old light-mode overrides that hand-mixed lime into the ink are gone — --label-ink is
+   the one place that decision lives now, so these three cannot drift apart again) */
+/* the box belongs WITH the headline group, a normal gap away — not floated to the far edge */
+#home-slot { margin-top:2.2rem; }
+
+/* (The scroll cue — the pulsing lime arrow and its `@keyframes cue` — is gone. Its job is done
+   by the two things that replaced it: the page is cut into two hard-snapping folds, so a scroll
+   commits to the board instead of drifting, and on load the first fold bobs twice (`.home1.nudge`
+   below) to say it moves. An arrow that says "scroll" plus a snap that only lets you scroll one
+   way was one instruction too many, and it duplicated the board's own "milestones" label.) */
+@keyframes nudge {
+  0%, 62%, 100% { transform:translateY(0); }
+  12% { transform:translateY(-15px); }
+  26% { transform:translateY(0); }
+  38% { transform:translateY(-15px); }
+  52% { transform:translateY(0); }
+}
+/* the whole first fold — headline group AND the box inside it — dips twice, a beat after load.
+   Gated in JS so it is added once, on Home, and never under reduced motion. */
+.home1.nudge { animation:nudge 2.4s ease-in-out .45s 1 both; }
+
+/* ============================ HOME · screen 2 — the milestone board (A11.13/.20) ======
+   ONE fold, and it never scrolls: the head (label + line) holds the top, the cards take
+   everything left and float centred in it. The board used to be `grid: auto 1fr` with a
+   content height and a `padding-top`, so it sat pinned to the top with all the slack dumped
+   below — that dead band under the cards. It is a flex column filling the fold now, and the
+   cards are sized in dvh so five of them shrink to fit a short phone instead of spilling up
+   into screen 1. Tracker rail down the LEFT of the body, two equal columns, baked tilts. */
+.board { display:flex; flex-direction:column; height:100%;
+  padding-top:clamp(.8rem, 3dvh, 2.4rem); }
+.boardhead { flex:0 0 auto; }
+/* the body takes the leftover height and centres itself as a BLOCK (margin-block:auto in the
+   flex column) rather than centring its grid row. Centring the ROW collapsed the tracker — the
+   rail sized down to its dots and the lines had no height to fill. As a plain grid the rail
+   stretches to the cards' full height again, a line between every dot, and the whole block just
+   floats in the middle of the space under the head. */
+.boardbody { flex:0 1 auto; min-height:0; margin-block:auto; display:grid;
+  grid-template-columns:auto minmax(0,1fr); column-gap:1.2rem; }
+.boardlabel { margin:0 0 .25rem; color:var(--label-ink); }   /* directly above the cards */
+.boarddesc  { margin:0 0 1.1rem; font-size:var(--t-sub); line-height:1.5; color:var(--muted);
+  max-width:32rem; }
+.rail { display:flex; flex-direction:column; align-items:center; gap:0; padding-top:.7rem; }
+.rail .line { width:1px; flex:1 1 auto; background:var(--muted); opacity:.35; }
+.rail .dot {
+  width:9px; height:9px; border-radius:50%; flex:0 0 auto;
+  background:transparent; border:1px solid var(--muted); padding:0;
+  transition:background .14s ease-out, box-shadow .14s ease-out, transform .14s ease-out;
+}
+.rail .dot.on {
+  background:var(--accent); border-color:var(--accent); transform:scale(1.25);
+  box-shadow:0 0 0 5px color-mix(in srgb, var(--accent) 26%, transparent);
+}
+.notes {
+  position:relative; display:grid;
+  /* minmax(0,1fr) matters: a nowrap child inside a note must never be able to widen
+     its column, or the whole board overflows the screen */
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  column-gap:1.3rem; row-gap:clamp(.5rem, 1.7dvh, 1.4rem); align-items:start;
+}
+
+/* a sticky note: EQUAL widths (each fills its grid column; the big one spans both), baked tilt,
+   straightens on hover (A11.21 signature). The old per-card --w made the two-column cards
+   different widths, which read as broken rather than playful — the owner wants them balanced. */
+.note {
+  position:relative; display:block; width:100%; min-width:0;
+  padding:.85rem .9rem 1rem; border-radius:var(--radius-tile);
+  text-align:left; box-shadow:var(--shadow);
+  transform:rotate(var(--tilt, 0deg));
+  transition:transform .14s ease-out, box-shadow .14s ease-out;
+}
+/* `.touched` is the touch stand-in for hover: a phone has no hover at all, so every one of these
+   signature moves was dead on the device they were designed for. JS adds it on pointerdown and
+   holds it briefly after release. */
+.note:hover, .note.touched { transform:rotate(0deg) translateY(-3px); }
+.note:active { transform:rotate(0deg) scale(.97); }
+.note .label { display:block; margin-bottom:.6rem; }
+/* (no per-card label override any more — every card takes --label-ink below, which is the dirty
+   green in light mode and lime in dark, so the decision lives in exactly one place) */
+/* (the mono `.note .q` that used to sit here is gone. It was fully superseded by the Archivo rule
+   below — the one the font-grouping pass added — and all that outlived it was a min-height sitting
+   underneath the fixed height at the end of this block, which is exactly the kind of leftover that
+   sends you hunting for a mono card question that no longer exists.) */
+.note.big { grid-column:1 / -1; padding:1.15rem 1.2rem 1.3rem; }
+/* THE type grouping, taken from the Browse spines and applied here so the two pages speak with
+   one voice: the CATEGORY wears the display face (the spine's `.name`), the QUESTION wears the
+   body face (the spine's `.sub`). Mono is dropped from both — it was doing the job of neither.
+   These beat the `.meta` utility on the same element by specificity, on purpose. */
+.note .label {
+  font-family:'Archivo Black',system-ui,sans-serif; font-weight:400;
+  font-size:var(--t-cardtitle); letter-spacing:-.01em; text-transform:none;
+  /* one line, locked. A wrapping category was both ugly ("ORIENTATION / CAMP") and a reflow
+     source: when it went from one line to two it shunted every card below it. */
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.note .q {
+  font-family:'Archivo',system-ui,sans-serif; font-weight:400;
+  font-size:var(--t-body); line-height:1.5; letter-spacing:0; text-transform:none;
+  display:block;
+}
+/* Reserved height, not min-height, on EVERY card's question — the live card's typewriter and a
+   late web font are both reflow sources a fixed box shuts out. It is a dvh CLAMP, not a flat em,
+   because the board may not scroll: on a short screen five stacked cards have to give back height
+   or they spill into screen 1, so the question reserve shrinks with the viewport (floor ~2 lines)
+   and grows back on a tall one (ceiling the old 4.4em). "Wide not tall" falls straight out of it. */
+.note .q { height:clamp(2.4em, 8dvh, 4.4em); overflow:hidden; }
+.note.big .q { height:clamp(2.5em, 8.4dvh, 4.6em); overflow:hidden; }
+/* The five Browse colours in THE SHELF'S OWN ORDER, card 1 through card 5. The ramp runs
+   near-black -> dark olive -> lime-green -> lime -> near-white, and that direction is the meaning,
+   so the board is not free to permute it. The earlier swap (card 5 wearing spine 1) only made
+   sense while card 1 had no colour of its own; it does now, so the swap is undone.
+
+   Every card is GLASS WEARING A COLOUR — which is exactly what card 1 already was. The white a
+   reader sees on card 1 is `--glass`, a film at .58 alpha in light mode, and it reads as glass
+   because the blur and the masked conic edge sit above it. Replacing that film with an 88%-opaque
+   colour is what made cards 2-5 read as solid paint: at 88% there is almost nothing left behind
+   for the blur to bend, so the material stops showing.
+   So the colour goes on AT THE GLASS'S OWN ALPHA instead of instead of it. Relative colour syntax
+   takes each spine's r/g/b and drops the film's alpha onto it, so all five are provably the same
+   material and only the hue changes. One number, --tint-a, controls the whole board. */
+.note.t1 { background:rgb(from var(--spine-c1) r g b / var(--tint-a)); }
+.note.t2 { background:rgb(from var(--spine-c2) r g b / var(--tint-a)); }
+.note.t3 { background:rgb(from var(--spine-c3) r g b / var(--tint-a3, var(--tint-a))); }
+.note.t4 { background:rgb(from var(--spine-c4) r g b / var(--tint-a4, var(--tint-a))); }
+.note.t5 { background:rgb(from var(--spine-c5) r g b / var(--tint-a5, var(--tint-a))); }
+/* On near-black the light end of the ramp needs a touch more of its own colour to read as the
+   light end at all — a small lift, not a fill: .95 turned card 3 into paint and the glass stopped
+   showing. Cards 1 and 2 are meant to be dark and stay on --tint-a untouched. */
+:root.dark {
+  --tint-a3:.44;
+  --tint-a4:.42;
+  --tint-a5:.40;
+}
+/* Text follows what the card COMPOSITES to, and that differs by mode — a translucent tint over a
+   pale ground keeps the ramp's light end light, while the same tint over a near-black ground
+   composites dark whatever its hue. Two colours as asked: one for the category, one for the
+   question. Dark-reading cards take lime + white; light-reading cards take the dirty green +
+   near-black. Never the dark pair on a dark card. */
+/* Text follows the RAMP and is the same decision in both modes: white on the dark end, near-black
+   on the light end, one colour per card for the category and the question alike, no lime anywhere
+   on the board. Cards 1-2 white, cards 3-5 near-black. */
+.note.t1 .label, .note.t1 .q,
+.note.t2 .label, .note.t2 .q { color:#FFFFFF; }
+.note.t3 .label, .note.t3 .q,
+.note.t4 .label, .note.t4 .q,
+.note.t5 .label, .note.t5 .q { color:#16210F; }
+.note .list { display:none; }              /* the hover question list is gone (A11.26) */
+.note .next { display:none; }              /* so is the sliver that hung under each card */
+/* ---------- the milestone card's material — unchanged, on purpose ----------
+   The board's notes keep the grey-tinted surface and the masked conic edge they had
+   before the liquid-glass pass. This is deliberately NOT the new material. */
+.paper {
+  position:relative;
+  background:var(--glass);
+  color:var(--glass-ink);
+  -webkit-backdrop-filter:blur(14px) saturate(1.15);
+          backdrop-filter:blur(14px) saturate(1.15);
+  border:0;
+}
+.paper::after {
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:1px;
+  pointer-events:none;
+  background:conic-gradient(from var(--edge-angle, 210deg),
+    var(--refl)   0deg   74deg,
+    var(--light)  92deg 128deg,
+    transparent  150deg 214deg,
+    var(--shade) 238deg 318deg,
+    var(--refl)  348deg 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  transition:filter .14s ease-out, opacity .14s ease-out;
+}
+.paper.lit::after { filter:brightness(1.45) saturate(1.3); }
+
+/* the pile (A11.20): sheets of ONE hue stepped per layer — never different colours */
+.pile { position:relative; }
+/* The pile's sheets carry their scatter as three custom properties instead of an inline
+   transform, so CSS owns the hover state. Straightening the pile must SETTLE it, not slide it:
+   every sheet loses its tilt and drops its vertical offset to a common ground, while keeping
+   its own horizontal offset — so the stack lands flat but stays scattered sideways. */
+/* Every card is a pile now, with the SAME offsets, rotations and opacities card 1 had — the
+   stack is one style, not a per-card invention. `background-color:inherit` is what keeps each
+   card's own colour: a sheet is another sheet of the same paper, so it cannot drift from the
+   card it sits under. Card 1 keeps the stronger glass, being glass rather than paper. */
+.pile .sheet-back {
+  position:absolute; z-index:-1; inset:0; border-radius:var(--radius-tile);
+  background-color:inherit;
+  transform:rotate(var(--sr, 0deg)) translate(var(--sx, 0px), var(--sy, 0px));
+  transition:transform .5s cubic-bezier(.34,1.1,.64,1), opacity .5s ease-out;
+}
+/* (no `.big.pile` exception any more: card 1 wears a colour like the other four, so its sheets
+   inherit that colour through `background-color:inherit` exactly as theirs do. The old
+   --glass-strong override was what kept card 1's stack looking like a different material.) */
+/* Separation between a card and its own stack. Inheriting the colour keeps the stack the same
+   paper, but where card and ground are close in lightness the sheets stop reading as sheets — so
+   they are pushed the other way from the ground, never recoloured.
+   LIGHT: the three light-end cards sit on a pale ground, so their sheets go darker.
+   DARK: card 1 is near-black on near-black, so its two nearest sheets go lighter instead.
+   Only the two nearest, because the furthest sheet reads as shadow and should stay quiet. */
+:root:not(.dark) .note.t3 .sheet-back,
+:root:not(.dark) .note.t4 .sheet-back,
+:root:not(.dark) .note.t5 .sheet-back { filter:brightness(.88); }
+:root.dark .note.t1 .sheet-back:nth-child(2),
+:root.dark .note.t1 .sheet-back:nth-child(3) { filter:brightness(2.1); }
+.note.pile:hover .sheet-back,
+.note.pile.touched .sheet-back,
+.note.pile:focus-visible .sheet-back {
+  transform:rotate(0deg) translate(var(--sx, 0px), 0px);
+}
+.caret { display:inline-block; width:.55ch; border-bottom:.14em solid currentColor;
+  margin-left:.1em; animation:blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity:0; } }
+
+/* ============================ CHAT (A11.4 / A11.14 / A11.16) ============================
+   Empty state = greeting + one big centred question on the bloom; it animates away on the
+   first message and comes back on Reset. Bubbles keep the FORMER style: flat, asymmetric,
+   one squared inner corner on the speaker's side — glass material, same for both sides,
+   and lighter than the chat box. */
+.hello { text-align:center; padding:16vh 0 0; transition:opacity .3s ease-out, transform .35s ease-out; }
+.hello .kicker { display:block; margin-bottom:1rem; }
+/* the greeting is the Chat screen's one headline, the same family and size as "Ask away" on Home:
+   the pair belongs to --t-display alone and shares it with no other title, at either width */
+.hello .display { font-size:var(--t-display); }
+.hello.gone { opacity:0; transform:translateY(-12px); pointer-events:none; height:0; padding:0; overflow:hidden; }
+
+/* One column now that the turn-tracker rail is gone. minmax(0,…) is load-bearing: a grid
+   track's default minimum is min-content, so one unbreakable word in a bubble would grow
+   the track wider than the viewport and tip the whole chat sideways. */
+/* One shared left gutter for everything in the bot's column, so the bubble, the branch chips
+   and "read the full answer" all start on the same line. It is the speaker dot's width plus
+   the row gap — derived, not a coincidental 1.1rem that drifted out of step. */
+.chatgrid { display:grid; grid-template-columns:minmax(0, 1fr); --gutter:calc(10px + .5rem); }
+
+/* Top-aligned, and NO tall min-height. `justify-content:flex-end` plus a tall min-height used
+   to pin a short conversation to the bottom and then snap it upward the moment content
+   outgrew that height — the jump-on-send (L2). Growing from zero in one direction means the
+   scroller's bottom is always the real bottom, so there is nothing to jump to. */
+.thread { display:flex; flex-direction:column; padding-top:1rem; min-width:0; }
+.row { display:flex; min-width:0; }
+.row.bot { justify-content:flex-start; }
+.row.you { justify-content:flex-end; }
+.row + .row.bot { margin-top:7px; }
+.row.you { margin-top:24px; }
+
+/* Reading measure, not a percentage of whatever is available. Two caps, because they fail
+   in opposite directions: the % keeps a phone bubble from running gutter to gutter, and the
+   rem stops a desktop line from growing past a comfortable measure.
+   `overflow-wrap:anywhere` + `min-width:0` are the bubble half of the overflow fix — a
+   flex item's default min-width is its min-content width, so an unbreakable run of
+   characters (a pasted URL, a keyboard mash) pushed straight past max-width and off screen.
+   `anywhere` is deliberate over `break-word`: only `anywhere` also shrinks the intrinsic
+   min-content size, which is what lets the flex item and grid track actually give way. */
+.bubble {
+  max-width:min(80%, 34rem); padding:1rem 1.35rem; font-size:var(--t-body); line-height:1.58;
+  border-radius:var(--radius);
+  min-width:0; overflow-wrap:anywhere;
+  /* the same face and weight the milestone cards' questions use, so the body voice is one voice
+     across the app rather than per-screen */
+  font-family:'Archivo',system-ui,sans-serif; font-weight:400;
+}
+/* the user's bubble is the same body voice as the bot's — only the side and the fill differ */
+.bubble.you { max-width:min(74%, 26rem); padding:.9rem 1.3rem; }
+/* the rim runs unbroken: the squared inner corner cut it, and a bevel needs the whole
+   perimeter to carry light round. Single-line bubbles become full stadiums, as in the
+   light ref's pill family. */
+/* Small pills stay oval in both modes — the og shape. The scaled `.dbox` corner is only for
+   bubbles big enough for a box corner to read as one, i.e. the ones that actually wrap. */
+.bubble.one { border-radius:999px; }
+:root.dark .bubble { border-radius:var(--r, var(--radius)); }
+:root.dark .bubble.one { border-radius:999px; }
+.bubble p { margin:0; }
+.bubble p + p { margin-top:.55rem; }
+.bubble ol, .bubble ul { margin:.45rem 0 0; padding-left:1.1rem; }
+.bubble li { margin:.22rem 0; }
+.bubble .mono { text-transform:none; letter-spacing:0; font-size:.95em; }
+
+/* pending: the same glass as every other bubble, and NO animation on the bubble itself.
+   The breathing lime edge that used to live here is gone — animating a shape wrapped around
+   text drags the eye across the words. The waiting signal moved to the speaker dot below. */
+.bubble.ask.resolved, .bubble.ask.resolved.reveal { animation:none; opacity:.9; }
+/* the speaker mark: a lime circle beside a bot answer, a white one beside the user's (A11.27) */
+.row { align-items:flex-end; gap:.5rem; }
+.mark { position:relative; width:10px; height:10px; border-radius:50%; flex:0 0 auto; margin-bottom:.55rem; }
+.row.bot .mark { background:var(--speaker); }
+.row.you .mark { background:var(--surface); border:1px solid var(--shade); }
+
+/* An open follow-up ripples its dot: the same halo the milestone rail's active dot wears,
+   pushed outward and repeated. Localised to a 10px circle, so nothing moves across text, and
+   it sits exactly where the answer will land. Colour comes from --speaker, so light mode
+   ripples near-black and dark mode ripples lime. */
+.row.asking .mark::after {
+  content:""; position:absolute; inset:-1px; border-radius:50%;
+  border:1.5px solid var(--speaker);
+  animation:dotripple 2.1s ease-out infinite;
+}
+@keyframes dotripple {
+  0%   { transform:scale(1);   opacity:.8; }
+  75%  { transform:scale(3.4); opacity:0; }
+  100% { transform:scale(3.4); opacity:0; }
+}
+.bubble.back { max-width:min(80%, 34rem); font-size:var(--t-sub); color:var(--muted); }
+
+/* The thinking indicator is a bot ROW now (dot + dots pill), so it stands exactly where the
+   bubble will stand — the column does not shift when one replaces the other. Its height is
+   kept close to a one-line bubble's for the same reason. The Stop pill only appears while the
+   server is the thing being waited on. */
+.typing .dots { display:flex; gap:4px; padding:.95rem 1.1rem; border-radius:999px; }
+.typing i { width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.4;
+  animation:hop 1.1s ease-in-out infinite; }
+.typing i:nth-child(2) { animation-delay:.14s; }
+.typing i:nth-child(3) { animation-delay:.28s; }
+@keyframes hop { 0%,100% { opacity:.3; transform:translateY(0); } 50% { opacity:1; transform:translateY(-3px); } }
+
+/* branch chips: liquid glass like everything else on this screen. Which of these earns an
+   accent is decided later (Phase 8) — here they are material only. */
+.chips { display:flex; flex-wrap:wrap; gap:.4rem; margin:.6rem 0 0 var(--gutter);
+  max-width:min(80%, 34rem); min-width:0; }
+.chip {
+  padding:.5rem 1rem; border-radius:999px; border:0;
+  color:var(--ink);
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.1em;
+  text-transform:uppercase; overflow-wrap:anywhere; min-width:0;
+  transition:transform .14s ease-out, color .16s ease-out, opacity .2s ease-out,
+             background-color .3s ease;
+}
+/* One of the three PILL fills (chips, read-more, ask-in-chat). It inverts by mode through
+   --pill-fill/--pill-ink: a black pill + lime ink in light, a lime pill + black ink in dark.
+   The fill EASES in over .3s so sweeping a row of chips cannot strobe. Plain lines never fill
+   (see .trow) — that restraint is what keeps lime an accent, not a surface. */
+.chip:hover:not(:disabled) {
+  background-color:var(--pill-fill); color:var(--pill-ink); transform:translateY(-2px);
+}
+.chip:active:not(:disabled) { transform:scale(.97); }
+.chip:disabled { opacity:.34; }
+.chip.picked:disabled { opacity:.62; }
+.chip.picked::before { content:"\2713 "; }
+
+/* (the floating `.undo` pill that used to be appended into the thread is gone — Undo lives on
+   the chat box's own control row now, next to Reset. See `.boxrow` / `.ctl`.) */
+
+/* "read the full answer" — glass, not a coloured pill, and no underline anywhere */
+.readmore {
+  align-self:flex-start; margin:.6rem 0 0 var(--gutter); padding:.4rem .9rem;
+  display:inline-flex; align-items:center; gap:.45rem;
+  border:0; border-radius:999px;
+  color:var(--ink);
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.12em;
+  text-transform:uppercase; text-decoration:none;
+  transition:background-color .3s ease, color .16s ease-out, transform .14s ease-out;
+}
+.readmore i { font-style:normal; transition:transform .14s ease-out; }
+.readmore:hover { background-color:var(--pill-fill); color:var(--pill-ink); transform:translateY(-2px); }
+.readmore:hover i { transform:translateX(3px); }
+.readmore:active { transform:scale(.97); }
+.prose { margin:1.7rem 0 0; font-size:var(--t-body); line-height:1.7; max-width:86%; }
+.prose[hidden] { display:none; }
+.prose p { margin:0 0 .65rem; }
+.prose ol, .prose ul { margin:.2rem 0 .7rem; padding-left:1.15rem; }
+.prose li { margin:0 0 .5rem; }
+.prose .plabel { font-weight:700; color:var(--ink); }   /* light: bold ink -- lime is unreadable on the light ground */
+:root.dark .prose .plabel { color:var(--accent); }      /* dark: the lime label the option promised */
+
+/* ============================ THE CHAT BOX (A11.22) ============================
+   Two rows, always: the text line, then the box's own controls. Same face and size for
+   placeholder and typed text (mono), placeholder the dimmer of the two.
+   `.composer` RESERVES the focused height and bottom-aligns the box inside it, so the box
+   can grow upward without pushing a single thing on the page — the growth happens into space
+   that was already there. The reserved strip is transparent and click-through. */
+.composer {
+  position:relative; margin:1.4rem 0 0;
+  display:flex; align-items:flex-end; min-height:var(--box-max);
+  pointer-events:none;                /* only the box itself takes input */
+}
+/* `display:flex` above out-specifies the UA's `[hidden] { display:none }`, which is why the chat
+   box was still on screen on Browse — the attribute was set and doing nothing. */
+.composer[hidden] { display:none; }
+.composer > * { pointer-events:auto; }
+.composer.floating {
+  position:fixed; z-index:5; left:0; right:0; bottom:0;
+  padding:1rem clamp(1rem, 5vw, 2.4rem) calc(1rem + env(safe-area-inset-bottom));
+  margin:0;
+}
+.box {
+  position:relative; display:flex; flex-direction:column; gap:.32rem;
+  width:100%; max-width:44rem; margin:0 auto; padding:.4rem .45rem;
+  border-radius:var(--box-r); overflow:visible;
+  transition:transform .24s cubic-bezier(.22,1,.36,1);
+}
+/* Focus grows the TEXT row and lifts the box a little. No glow, no coloured edge — and the
+   shadow is drawn INSIDE the shape (see .box::before) so you read it through the glass,
+   which is what glass would actually do. */
+.box input {
+  width:100%; min-width:0; background:none; border:0; outline:none;
+  padding:.4rem .72rem;               /* the caret needs room — it was sitting on the edge */
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-input); letter-spacing:.01em;
+  color:var(--ink);
+  transition:padding .22s ease-out;
+}
+.box:focus-within { transform:translateY(-3px); }
+.box:focus-within input { padding:.82rem .72rem; }
+/* the shadow lives behind the box's own translucent fill, so it shows THROUGH the glass
+   instead of hiding underneath it. Subtle: an inner fade plus a short outer one. */
+.box::before {
+  content:""; position:absolute; z-index:-1; inset:0;
+  border-radius:inherit; pointer-events:none;
+  box-shadow:inset 0 -15px 18px -15px rgba(0,0,0,.34),
+             0 5px 12px -9px rgba(0,0,0,.30);
+  opacity:0; transition:opacity .22s ease-out;
+}
+.box:focus-within::before { opacity:1; }
+.box input::placeholder { color:var(--muted); opacity:.7; }   /* dimmer than typed text */
+
+/* ---- the box's own control row: Reset/Undo one side, send the other ----
+   Inside the box, so nothing overlaps the text you are typing or the messages behind it. */
+/* justify-content:flex-end, NOT space-between: on Home the control group is display:none, and a
+   single remaining child under space-between snaps to the START — which is why send jumped to
+   the left-hand side there. `margin-right:auto` on the group does the pushing instead, so send
+   is pinned to the right on every screen whether the controls exist or not. */
+.boxrow { display:flex; align-items:center; justify-content:flex-end; gap:.5rem;
+  padding:0 .06rem 0 .14rem; }
+.convo-actions { display:flex; align-items:center; gap:.32rem; min-width:0; margin-right:auto; }
+.convo-actions[hidden] { display:none; }
+/* Flat near-black rectangles, deliberately NOT glass: they have to read as controls sitting
+   on the glass, not as more glass. Light = near-black on a pale box. Dark = a light flat
+   film, because "darker than the box" cannot be visible on a near-black box. */
+.ctl {
+  display:inline-flex; align-items:center; gap:.32rem;
+  padding:.3rem .55rem; border:0; border-radius:9px;
+  background:var(--ctl-bg); color:var(--ctl-ink);
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.1em;
+  text-transform:uppercase; white-space:nowrap;
+  transition:opacity .16s ease-out, transform .14s ease-out;
+}
+.ctl i { font-style:normal; font-size:.8rem; line-height:1; }
+.ctl:hover { opacity:.82; transform:translateY(-1px); }
+.ctl:active { transform:scale(.96); }
+.ctl[hidden] { display:none; }
+/* Send: near-black disc, lime arrow. Lime as INK on black is ~14:1, the one thing lime does
+   reliably in both modes. The pulse ring is per-mode: a lime ring is invisible on the light
+   ground (1.16:1), so light pulses in its own near-black and dark pulses in lime. */
+.send {
+  flex:0 0 auto; width:30px; height:30px; border:0; border-radius:50%;
+  display:grid; place-items:center;
+  background:var(--send-bg); color:var(--accent);
+  animation:sendpulse 2.6s ease-in-out infinite;
+  transition:transform .14s ease-out, filter .14s ease-out;
+}
+@keyframes sendpulse {
+  0%,100% { box-shadow:0 0 0 0 var(--send-pulse); }
+  50%     { box-shadow:0 0 0 8px transparent; }
+}
+.send svg { fill:currentColor; display:block; transition:transform .14s ease-out; }
+.send:hover svg { transform:translateY(-2px); }      /* the arrow nudges in its travel direction */
+.send:active { transform:scale(.97); }
+
+/* ============================ BROWSE — book spines (A11.5 / A11.10) ============================
+   Coloured spines piled behind each other, off-balance but visually joined. Hover slides one
+   out like pulling a book; opening it fills the section with its own content. The rail beside
+   them is interactive here: it says where you are and jumps.
+
+   The SHELF LEVEL is one centred fold, the same model as the milestone board: a line at the top
+   ("Browse according to your service stage", left-aligned with the spines) and the shelf floated
+   in the space below it, rather than pinned to the band with a dead band underneath. `.at-shelf`
+   is on only at level 1 — a book or topic page drops it and flows/scrolls, because a long topic
+   list or a full answer cannot be forced into one fold. */
+.shelfpage { display:flex; flex-direction:column; padding-top:clamp(.8rem, 3dvh, 2.4rem); }
+.shelfpage.at-shelf { min-height:var(--fold); }
+.shelfhead { flex:0 0 auto; }
+.shelfhead[hidden] { display:none; }
+.shelfdesc { margin:0 0 1.1rem; font-size:var(--t-sub); line-height:1.5; color:var(--muted);
+  max-width:32rem; }
+.shelfbody { display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:1.2rem; }
+/* same centring model as the board: centre the body as a BLOCK so the rail keeps stretching to
+   the shelf's full height (lines between the dots), instead of the row collapsing the tracker. */
+.shelfpage.at-shelf .shelfbody { flex:0 1 auto; min-height:0; margin-block:auto; }
+/* a book/topic page has no rail, so its single column runs full width and simply flows */
+.shelfpage:not(.at-shelf) .shelfbody { grid-template-columns:1fr; }
+
+.shelf { display:flex; flex-direction:column; }
+.spine {
+  position:relative; display:block; width:100%; text-align:left;
+  margin-left:var(--off, 0px); margin-top:var(--overlap, -14px);
+  padding:1.15rem 1.2rem 1.3rem; border:0;
+  border-radius:var(--radius);
+  transform:rotate(var(--tilt, 0deg));
+  box-shadow:var(--shadow);
+  transition:transform .18s ease-out, box-shadow .18s ease-out;
+}
+.spine:first-child { margin-top:0; }
+.spine:hover, .spine.touched { transform:rotate(0deg) translateX(14px); }   /* pulling a book off the shelf */
+.spine:active { transform:rotate(0deg) translateX(14px) scale(.985); }
+.spine .step {
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-micro); letter-spacing:.16em;
+  text-transform:uppercase; opacity:.75; display:block; margin-bottom:.5rem;
+}
+.spine .name { font-family:'Archivo Black',sans-serif; font-size:var(--t-title); letter-spacing:-.02em; }
+.spine .sub  { display:block; margin-top:.35rem; font-size:var(--t-sub); opacity:.72; }
+
+/* the five spine colours, from the existing palette only */
+.spine.c1 { background:var(--spine-c1); color:#F1F4EF; }
+.spine.c2 { background:var(--spine-c2); color:#F4F7EC; }
+.spine.c3 { background:var(--spine-c3); color:#16210F; }
+.spine.c4 { background:var(--spine-c4); color:var(--accent-ink); }
+.spine.c5 { background:var(--spine-c5); color:var(--surface-ink); }
+
+/* the opened book: it fills the section as if it were its own screen */
+.opened { padding-top:.6rem; }
+.opened .display { font-size:var(--t-page); margin-bottom:.4rem; }
+.backlink {
+  display:inline-flex; align-items:center; gap:.5rem; margin-bottom:1.6rem;
+  border:0; background:none; padding:.35rem .1rem; color:var(--ink);
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.09em;
+  text-transform:uppercase;
+  transition:color .16s ease-out, transform .14s ease-out;
+}
+/* the arrow is the navigation, the word is only the destination's name — so the glyph leads and
+   the mono caps follow it, rather than the two competing at the same weight. At 1.7em it read as
+   punctuation next to the label; ~2.8em is where it becomes the control and the word becomes its
+   caption. It is centred by giving the glyph a real box of its own height and centring INSIDE it:
+   with line-height:0 the box collapsed to nothing and the glyph painted off its baseline, which is
+   why it sat high against the label. */
+.backlink i {
+  color:var(--accent); font-size:2.8em; line-height:1;
+  display:flex; align-items:center; justify-content:center; height:1em;
+}
+
+/* page 3 only: the back control STICKS, so it doubles as the status line once the big title has
+   scrolled away. The status line the header could not seat (it truncated between the screen
+   switch and the theme button) is not rebuilt -- this already names where you are in the
+   hierarchy, is short by construction, and is the nav as well. The chapters page does the same
+   job with its sticky chapter head, so exactly one thing sticks per page. */
+.opened.topic .backlink {
+  position:sticky; top:0; z-index:3;
+  display:flex; width:100%; margin-bottom:1.2rem;
+  padding:.5rem .1rem; border-bottom:1px solid var(--head-edge);
+  background:var(--head-fill);
+  -webkit-backdrop-filter:blur(10px) saturate(1.05);
+  backdrop-filter:blur(10px) saturate(1.05);
+}
+.backlink:hover { color:var(--hover-ink); transform:translateX(-3px); }
+/* the label carries the underline, not the arrow: a rule under a 2.8em glyph is not a text
+   underline, it is a box edge */
+.backlink:hover .lbl {
+  text-decoration:underline; text-underline-offset:.2em;
+  text-decoration-thickness:1px; text-decoration-thickness:from-font;
+}
+
+/* ---------- level 2: the contents page ----------
+   Chapters are always open, so this reads as a book's table of contents. The chapter head
+   STICKS to the top of the scroller while you are inside its section: that is how the page
+   says where you are, which is the job the old scrub tracker did badly. The tracker is gone
+   and nothing takes its place -- the content is the position indicator.
+   Two mono jobs, no new type size: the head is small, tracked and uppercase; the topic line
+   is larger, sentence case and untracked. */
+.contents { margin-top:2.4rem; }
+.chapter { margin-bottom:2.6rem; }
+.chead {
+  position:sticky; top:0; z-index:2;
+  display:grid; grid-template-columns:auto 1fr auto; align-items:baseline; gap:.85rem;
+  padding:.75rem 0 .6rem; border-top:1px solid var(--head-edge);
+  /* the same frosted fill the header band uses: while it is stuck it IS floating chrome, and a
+     solid fill would not match the fixed gradient behind it */
+  background:var(--head-fill);
+  -webkit-backdrop-filter:blur(10px) saturate(1.05);
+  backdrop-filter:blur(10px) saturate(1.05);
+  /* A chapter head must not be SMALLER than the topics it heads. Small mono caps over big
+     sentence-case lines read as a footnote above a list, so the head takes the BODY face at body
+     size and the topics keep mono: the distinction is the face, the rule and the number -- not a
+     size or a case change. */
+  font-size:var(--t-body); line-height:1.4;
+}
+.chead .cnum, .chead .ccount {
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label);
+  letter-spacing:.12em; color:var(--ink); opacity:.5;
+}
+.chead .cname { color:var(--ink); }
+.crows { display:flex; flex-direction:column; padding-top:.55rem; }
+
+/* topics are plain lines, no pills, generously spaced (A11.28). Hover is the app-wide plain-line
+   rule: a 2px underline in currentColor, plus the shift. No fill, no hue swap. */
+.trow {
+  display:block; width:100%; text-align:left; border:0; background:none;
+  padding:.72rem .2rem;
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-body); line-height:1.45;
+  color:var(--ink);
+  transition:color .16s ease-out, transform .16s ease-out;
+}
+.trow:hover, .trow.here, .trow:focus-visible {
+  color:var(--hover-ink); transform:translateX(5px);
+  text-decoration:underline; text-underline-offset:.2em;
+  text-decoration-thickness:1px; text-decoration-thickness:from-font;
+}
+.trow i { display:none; }
+
+/* the sub-line under a big title. Same recipe the shelf's own spines already use for their
+   category list, and `.shelfdesc`/`.boarddesc` for their descriptions: the body face, one step
+   down, dimmed — NOT mono caps. Mono caps was doing five jobs on the topic page (back control,
+   chapter, branch labels, and both actions), which read as noise instead of hierarchy. Now it
+   only marks controls. */
+.subline {
+  margin:.1rem 0 0; font-size:var(--t-sub); line-height:1.5; opacity:.72;
+}
+
+/* level 3 — topic detail. Title and chapter stay left; the rest is a centred column. */
+.detail { max-width:34rem; margin:0 auto; }
+.lead { font-size:var(--t-body); line-height:1.7; margin:.2rem 0 1.4rem; }
+
+/* the page's voice: a real user's question, quoted. Italic is its one mark -- the branch
+   question below carries the lime rule, so the two never rely on the same signal. */
+.quote {
+  margin:0 0 1.6rem; font-size:var(--t-body); line-height:1.6;
+  font-style:italic; color:var(--ink);
+}
+
+/* one question per branch group -- a compound intent has two of these, each heading only its
+   own branches instead of every branch sharing one run-on sentence. It is a QUESTION, so it is
+   reading text: the body face at body size, no mono, no caps, and no bold — nothing in this app
+   is semibold and this is not the place to start. The lime rule is what marks it. */
+.qline {
+  margin:1.9rem 0 .8rem; padding-left:.95rem; border-left:2px solid var(--accent);
+  font-size:var(--t-body); line-height:1.6; color:var(--ink);
+}
+.qline:first-of-type { margin-top:0; }
+.bcard { border-radius:var(--radius-tile); margin-top:.5rem; }
+.bcard button {
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:.7rem;
+  border:0; background:none; padding:.8rem .95rem; text-align:left; color:inherit;
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.1em;
+  text-transform:uppercase;
+  transition:color .16s ease-out;
+}
+.bcard button:hover { color:var(--hover-ink); }
+/* the label underlines; the +/- sign is a control glyph, not text */
+.bcard button:hover span {
+  text-decoration:underline; text-underline-offset:.2em;
+  text-decoration-thickness:1px; text-decoration-thickness:from-font;
+}
+.bcard .body { padding:0 .95rem .9rem; font-size:var(--t-body); line-height:1.65; }
+.bcard .body[hidden] { display:none; }
+
+/* the two actions, same size: read on the LEFT, ask on the RIGHT (A11.28) */
+.detail-actions {
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  margin-top:2rem;
+}
+/* the two actions read at the same size as every other mono control — they used to be pinned
+   smaller here, which is why "read the full answer" was one size in chat and another on this page */
+.detail-actions .readmore, .detail-actions .askchat {
+  margin:0; padding:.5rem 1rem;
+}
+.askchat {
+  border:0; border-radius:999px; color:var(--ink);
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.12em;
+  text-transform:uppercase;
+  transition:background-color .3s ease, transform .14s ease-out, color .16s ease-out;
+}
+.askchat:hover { background-color:var(--pill-fill); color:var(--pill-ink); transform:translateY(-2px); }
+.askchat:active { transform:scale(.97); }
+
+/* Destructive confirmation, in the same card the About and Suggest-a-fix modals use.
+   Red carries the consequence, white is the way out — and cancel is the wider target. */
+.btn-danger, .btn-cancel {
+  border:0; border-radius:999px; padding:.6rem 1.15rem;
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-label); letter-spacing:.12em;
+  text-transform:uppercase;
+  transition:transform .14s ease-out, opacity .16s ease-out;
+}
+.btn-danger { background:var(--danger); color:var(--danger-ink); }
+.btn-cancel { background:var(--surface); color:var(--surface-ink); }
+.btn-danger:hover, .btn-cancel:hover { opacity:.86; transform:translateY(-1px); }
+.btn-danger:active, .btn-cancel:active { transform:scale(.97); }
+
+/* notice + modal */
+.notice {
+  margin:0 0 1.2rem; padding:.7rem .85rem; border-radius:var(--radius-tile);
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-micro); line-height:1.6; color:var(--muted);
+}
+.notice[hidden] { display:none; }
+/* ============================ MODALS (Phase 7) ============================
+   The old modals were liquid glass in both modes, so whatever sat behind them showed through the
+   copy and nothing was readable. The rule now: THE PANEL INVERTS ITS MODE. Light gets the
+   near-black slab with lime type; dark gets the lime slab with near-black type. Both are the
+   palette already in use, and each panel is the maximum contrast against its own ground.
+   The frost did not go away, it MOVED: the blur now lives on the scrim, so the page softens
+   behind the dialog while the panel itself stays fully opaque. No grey survives in here. */
+:root {
+  --modal-scrim:rgba(245,245,243,.62);   /* light: a pale frost, so the black panel pops off it */
+  --modal-fill:#17181A;                  /* the slab: light mode's near-black */
+  --modal-ink:#F2F1EC;                   /* reading copy on it — 16.6:1 */
+  --modal-key:var(--accent);             /* title, labels, Send fill — lime on black, 14.3:1 */
+  --modal-key-ink:#17181A;               /* type inside a lime pill */
+  --modal-well:#F5F5F3;                  /* an input is a cut-out of THIS mode's own ground */
+  --modal-well-ink:#17181A;
+  --modal-hair:rgba(242,241,236,.20);
+}
+:root.dark {
+  --modal-scrim:rgba(10,11,10,.60);      /* dark: a dark frost, so the lime panel pops off it */
+  --modal-fill:var(--accent);            /* the slab: lime */
+  --modal-ink:#0F1108;                   /* near-black copy on lime — 14.9:1 */
+  --modal-key:#0F1108;                   /* title, labels, Send fill */
+  --modal-key-ink:var(--accent);         /* lime type inside a near-black pill */
+  --modal-well:#16171A;                  /* the cut-out, again this mode's ground */
+  --modal-well-ink:#F2F1EC;
+  --modal-hair:rgba(15,17,8,.22);
+}
+
+.modal {
+  position:fixed; inset:0; z-index:20; display:grid; place-items:center;
+  padding:1.2rem; background:var(--modal-scrim);
+  -webkit-backdrop-filter:blur(10px) saturate(1.05);
+  backdrop-filter:blur(10px) saturate(1.05);
+}
+.card {
+  width:100%; max-width:28rem; padding:1.1rem 1.2rem 1.3rem; border-radius:var(--radius);
+  background:var(--modal-fill); color:var(--modal-ink); box-shadow:var(--shadow);
+}
+.card p { font-size:var(--t-body); line-height:1.62; }
+/* the two greys the panel used to inherit from the page — the muted body class and the icon
+   button's resting ink — are both re-homed onto the panel's own pair */
+.card .quiet { color:var(--modal-ink); opacity:.85; }
+.card .meta { color:var(--modal-key); }
+.card .icon-btn { color:var(--modal-ink); }
+.card .icon-btn:hover { color:var(--modal-key); }
+
+/* the head: title, its mono gloss on the same baseline, then close. One hairline under it, and
+   that is the ONLY divider — the card used to stack an h2, a display wordmark and a body gloss
+   in three different faces, which read as three unrelated titles. */
+.mhead {
+  display:flex; align-items:center; justify-content:space-between; gap:.8rem;
+  padding-bottom:.62rem; border-bottom:1px solid var(--modal-hair);
+}
+.mtitle { display:flex; align-items:baseline; gap:.62rem; flex-wrap:wrap; }
+.card .h2 { color:var(--modal-key); }
+
+/* ---------- About: a spec card ----------
+   Label/value rows in one grid (dt and dd are direct children, so every label lines up on the
+   same column without a per-row wrapper). Three type sizes in the whole card and no more: the
+   title, the mono label, the body value. The wordmark is the modal title itself, so there is no
+   second one inside the card. */
+.about-rows {
+  display:grid; grid-template-columns:auto 1fr; column-gap:1.1rem; row-gap:.72rem;
+  margin:.95rem 0 0;
+}
+.about-rows dt { white-space:nowrap; padding-top:.22rem; }
+.about-rows dd { margin:0; font-size:var(--t-body); line-height:1.6; }
+
+/* ---------- fields: a well cut out of the mode's own ground ----------
+   Rest state carries a heavy 2px bottom rule, which is where the eye lands. That rule is drawn
+   in the WELL's ink, not the accent: lime would be near-invisible on light's pale well and
+   near-black is near-invisible on dark's, so the accent stays out of the well entirely and does
+   its work in the labels, the title and Send. */
+.field { margin:.9rem 0; }
+/* a field label is a question put to the reader, so it is reading text in the body face. Mono is
+   reserved for what the user TYPES — the input below keeps it, the label does not. */
+.field label { display:block; margin-bottom:.4rem; font-size:var(--t-body); color:var(--modal-ink); }
+.field input, .field textarea {
+  width:100%; padding:.6rem .7rem; border-radius:calc(var(--radius-tile) / 2);
+  border:1px solid var(--modal-hair); border-bottom:2px solid var(--modal-well-ink);
+  background:var(--modal-well); color:var(--modal-well-ink);
+  font-family:'IBM Plex Mono',monospace; font-size:var(--t-input); outline:none; resize:vertical;
+}
+.field input::placeholder, .field textarea::placeholder { color:var(--modal-well-ink); opacity:.55; }
+.field input:focus, .field textarea:focus { border-bottom-width:3px; }
+/* the page's focus ring is grey, which vanishes on both panels — inside a modal the ring takes
+   the colour of whatever it is drawn ON */
+.card :where(button):focus-visible { outline-color:var(--modal-ink); }
+.field :where(input, textarea):focus-visible { outline-color:var(--modal-well-ink); }
+
+/* Send, and the confirmation's safe option, are the panel's key colour inverted. Danger keeps
+   its own red — the one hue in here that is not part of the pair, because it means something. */
+.card .askchat, .card .btn-cancel {
+  background:var(--modal-key); color:var(--modal-key-ink);
+}
+.card .askchat:hover, .card .btn-cancel:hover {
+  background-color:var(--modal-key); color:var(--modal-key-ink); opacity:.88;
+}
+.card .askchat { padding:.6rem 1.15rem; }
+.card .askchat[disabled] { opacity:.5; }
+.actions { display:flex; align-items:center; justify-content:flex-end; gap:.7rem; margin-top:1rem; }
+
+/* reveal — kept (A11.2): each bubble eases in, in sequence */
+.reveal { opacity:0; transform:translateY(6px); animation:rise .34s ease-out forwards; }
+@keyframes rise { to { opacity:1; transform:none; } }
+
+/* keyboard focus stays visible, but never in the accent colour (A11.8) */
+:where(button, input, textarea):focus-visible {
+  outline:2px solid var(--muted); outline-offset:2px;
+}
+
+/* ---------- the reduced-motion contract ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .scroll { scroll-behavior:auto; }
+  .scroll.snap { scroll-snap-type:none; }
+  .bubble.ask, .typing i, .caret, .reveal { animation:none !important; }
+  .theme-btn .star, .theme-btn .rays { transition:none !important; }
+  .reveal { opacity:1 !important; transform:none !important; }
+  /* the pending dot stops rippling but must still READ as pending, so the halo is simply
+     held open at rest — which is `.rail .dot.on`'s static halo, exactly. */
+  .row.asking .mark::after {
+    animation:none !important; opacity:.9; transform:scale(2.1);
+  }
+  /* focus still grows and lifts the box — it just arrives instantly instead of easing */
+  .box, .box:focus-within { transition:none !important; }
+  .note, .spine, .trow, .chip, .send, .icon-btn, .wordmark, .readmore, .askchat,
+  .switch .thumb, .note .list { transition:none !important; }
+  .note:hover, .spine:hover, .trow:hover { transform:rotate(var(--tilt, 0deg)); }
+  .note .list { max-height:7rem; }
+  /* the home-screen bob is a hint, not content — it does not play at all here */
+  .home1.nudge { animation:none !important; }
+}
+
+/* ---------- the board goes to one column at tablet-portrait width, not desktop ----------
+   Two columns only ever made sense with room for two; below this a single stack reads better and
+   is what the owner asked phones and small portrait tablets to get. Keyed on WIDTH, not a device:
+   a desktop window dragged narrow gets the same stack. 500, not 860 — 860 treated a mini-tablet in
+   portrait as a phone; anything over 500 is handled as desktop and keeps the 1-2-2 arrangement. */
+@media (max-width:500px) {
+  /* one column: the big card and the rest all stack in order. Widths are already 100% by
+     default now (the per-card --w is gone), so nothing else is needed here. */
+  .notes { grid-template-columns:minmax(0,1fr); }
+}
+
+/* ---------- phone first ---------- */
+@media (max-width:640px) {
+  /* THE PHONE HALF OF THE SCALE. A step that reads as small on a monitor reads as ordinary on a
+     phone, so these are restated values, not the desktop set with a ratio applied. Anything not
+     restated here is deliberately the same at both widths — --t-display, --t-label,
+     --t-input and --t-brand all hold their number, and the rules that used to re-declare a size
+     at this width by hand have been deleted rather than converted. */
+  :root {
+    --t-page:1.5rem;          /* an opened topic's title: 32px wide, 24px here */
+    --t-title:1.05rem;        /* a spine's name on the shelf */
+    /* reading text and a card's question are ONE size here, which is the whole point: a bubble, a
+       lead, the prose, a topic row and a card question all measure the same on a phone. */
+    --t-body:.86rem;
+    /* --t-sub used to hold .82rem here, which put it 0.64px from --t-body — invisible, and it
+       stopped mattering the moment `.subline` started carrying real hierarchy under every title.
+       .74rem restores a readable step (about 1.7px) without collapsing the two into one size. */
+    --t-sub:.74rem;
+    --t-cardtitle:.72rem;     /* a card's category — this is where it parts from --t-body */
+    --t-micro:.56rem;
+  }
+  body { font-size:14.5px; }
+  /* the top pad still comes from --head-h, so the band and the scroller cannot drift apart
+     (a hard-coded 4.2rem here was leaving only ~7px of clearance under a 60px band) */
+  .scroll { padding:calc(env(safe-area-inset-top, 0px) + var(--head-h) + .4rem) 1rem
+                    calc(var(--composer-h, 7.5rem) + 1.5rem); }
+  .boardbody, .shelfbody { column-gap:.8rem; }                        /* rail | cards, rail | shelf */
+  .notes { column-gap:1.3rem; }   /* row-gap is the base dvh clamp now, shared at every width */
+  /* the bubbles are NOT widened here any more. Overriding them to 92%/82% on a phone was
+     exactly why a long reply ran gutter to gutter — the base caps already read correctly
+     at this width. */
+  .chips, .prose { max-width:100%; }
+  /* the text size comes from --t-label like the rest of the family; only the padding is restated,
+     solved so the pill keeps the 119px width it has now instead of widening with the text */
+  .switch button { padding:.38rem .55rem; }
+
+  /* the two topic actions are full mono caps at --t-label now, and side by side on a 393px screen
+     that broke "ask this in chat" across two lines mid-phrase. Each takes its own row instead, so
+     both stay on one line and neither is the odd one out. */
+  .detail-actions { flex-direction:column; align-items:stretch; gap:.6rem; }
+  .detail-actions > span:empty { display:none; }
+  .detail-actions .readmore, .detail-actions .askchat {
+    align-self:stretch; justify-content:center; text-align:center;
+  }
+
+  /* ---- the headline earns the screen it is on ---- */
+  .home1 { padding:1rem 0 1.2rem; }
+  /* the headline and "Kopa's pal" are NOT restated here any more. "Ask away" shares --t-display
+     with the Chat greeting and nothing else, and "Kopa's pal" is one of the four --t-label labels,
+     so a hand-declared size at this width is exactly what pulled each of them out of its family.
+     The intents line keeps only its word-spacing: the separators are where most of its width goes,
+     and pulling them in is a fit adjustment, not a size. */
+  .home1 .sub { word-spacing:-.12em; }
+
+  /* ---- every screen starts closer to the band ---- */
+  .board, .shelfpage { padding-top:clamp(.6rem, 2.4dvh, 1.2rem); }
+  .browse { padding-top:1rem; }   /* the topics list keeps its own top space */
+
+  /* ---- the milestone cards come down a step, contents with them ---- */
+  /* the sizes now come from --t-cardtitle and --t-body above. What stays here is layout: the
+     padding, and the RESERVED HEIGHT for the question — fixed, not min, so neither the live card's
+     typewriter nor a late web font can re-wrap a question and shunt the row below it. */
+  .note { padding:.7rem .75rem .8rem; }
+  .note .label { margin-bottom:.45rem; }
+  .note.big { padding:.9rem .95rem 1rem; }
+  /* (the fixed .q heights that used to sit here are gone — the base rule is a dvh clamp now, so
+     the phone shares the one shrink-to-fit reserve instead of pinning its own taller number) */
+
+  /* ---- Browse: the spines were touching the right edge, because width:100% ignored the
+       offset they are pushed across by. Narrower, and a little taller to keep their mass. ---- */
+  .spine { width:calc(100% - var(--off, 0px) - .35rem); padding:1.25rem 1.1rem 1.4rem; }
+}
