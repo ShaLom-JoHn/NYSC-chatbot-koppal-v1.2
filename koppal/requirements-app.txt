@@ -1,0 +1,17 @@
+# Only what the running server needs. Use this to deploy.
+#
+# `requirements.txt` is the full development set: it also pins pandas and matplotlib, which
+# the notebook uses and the server never imports. Installing those on a host adds several
+# minutes to every build and a few hundred MB to the image for no benefit.
+#
+# Verified against the code: the runtime imports are sklearn (koppal_seeds), joblib
+# (koppal_nlu), and fastapi plus pydantic plus uvicorn (koppal_api). Nothing else.
+#
+# The scikit-learn pin must stay identical to the one in requirements.txt. The model is a
+# pickled Pipeline, and unpickling under a different minor version can warn or fail outright.
+
+scikit-learn==1.9.0
+joblib==1.5.3
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
