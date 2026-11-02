@@ -1,11 +1,9 @@
 ---
 title: Koppal
 emoji: 🇳🇬
-colorFrom: green
-colorTo: gray
 sdk: docker
-app_port: 7860
-pinned: false
+status: undeployed
+runnable: notebook
 license: apache-2.0
 ---
 
@@ -14,9 +12,8 @@ license: apache-2.0
 An NYSC question answering assistant. Two parts: a text classification model that works out what a
 question is about, and an application built around it that holds a conversation and gives the answer.
 
-**Try it: [LIVE URL GOES HERE]** — open the link and type a question. Nothing to install.
 
-Suggested questions to try:
+trial questions on the model with answers:
 
 - `how much is allawee` — informal spelling, the model still routes it, then answer the follow up with
   `the regular monthly cycle` to see it use the earlier question
